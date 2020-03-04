@@ -1,2 +1,15 @@
-<h1>Poop</h1>
+<div *ngIf="!elections">
+  Loading...
+</div>
+
+<div *ngIf="elections">
+
+  <h1> {{ elections.knesset }} הבחירות לכנסת ה - </h1>
+
+  <div *ngFor="let party of elections.parties">
+    <h4> {{ party.name }} </h4>
+  </div>
+
+</div>
+
 <router-outlet></router-outlet>

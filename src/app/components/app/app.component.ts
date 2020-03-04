@@ -1,24 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ElectionsPageParser } from '../../services/elections/elections-page-parser.service';
+import { ElectionsService } from "../../services/elections/elections.service";
+import { Elections } from "../../models/elections.model";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  title = 'elections';
+export class AppComponent implements OnInit {
+  private elections: Elections;
 
+  public title = 'elections';
 
-  do(globalMandat: number, votes: number) {
+  constructor(private electionsService: ElectionsService) { }
 
-    const overall = 4144991
-    const clali = overall / 120
-
-    const kolot = 300000
-    const firstMandat = Math.round(kolot / clali);
-    const left = 120 - firstMandat;
-
-    const listModed = kolot / firstMandat + 1
-
+  public async ngOnInit(): Promise<void> {
+    this.elections = await this.electionsService.getElectionsResults();
   }
 }
