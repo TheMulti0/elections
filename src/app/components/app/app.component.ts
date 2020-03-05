@@ -1,33 +1,45 @@
-import { Component, OnInit } from '@angular/core';
-import { ElectionsService } from '../../services/elections/elections.service';
-import { IElections } from '../../models/ielections.model';
-import { Calculator } from '../../services/calculator/calculator.service';
-import { CalculatedElections } from '../../models/calculated-elections.model';
+import { Component } from '@angular/core';
+import { IElectionsInfo } from '../../models/ielectionsinfo.model';
+import { NavigationExtras, Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
-  private displayedColumns: string[] = [
-    'name', 'letters', 'percentage', 'votes', 'seats'
+export class AppComponent {
+  private infos: IElectionsInfo[] = [
+    {
+      name: 'הבחירות לכנסת ה - 23 (2020)',
+      url: 'https://votes23.bechirot.gov.il/nationalresults',
+      blockPercentage: 3.25,
+      connectedPartiesByLetters: [
+        ['מחל', 'טב'],
+        ['פה', 'אמת'],
+        ['שס', 'ג']
+      ]
+    },
+    {
+      name: 'הבחירות לכנסת ה - 22 (2019 ספטמבר)',
+      url: 'https://votes22.bechirot.gov.il',
+      blockPercentage: 3.25,
+      connectedPartiesByLetters: [
+        ['מחל', 'טב'],
+        ['מרצ', 'אמת'],
+        ['שס', 'ג'],
+        ['פה', 'ל']
+      ]
+    }
   ];
-  private elections: CalculatedElections;
-  private seats;
 
-  public title = 'elections';
+  constructor(private router: Router) { }
 
-  constructor(private electionsService: ElectionsService) { }
-
-  public async ngOnInit(): Promise<void> {
-    const elections: IElections = await this.electionsService.getElectionsResults();
-
-    this.elections = Calculator.calculate(elections);
-    this.seats = this.elections.parties
-      .map(p => p.seats + p.stubSeats)
-      .reduce((lhs, rhs) => lhs + rhs);
-
-    console.log('');
+  private navigate(info: IElectionsInfo): Promise<boolean> {
+    const navigationExtras: NavigationExtras = {
+      state: {
+        info: JSON.stringify(info)
+      }
+    };
+    return this.router.navigate(['results'], navigationExtras);
   }
 }

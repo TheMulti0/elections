@@ -8,7 +8,6 @@ export class CalculatedElections implements IElections {
   public overallVotes: number;
   public legalVotes: number;
   public illegalVotes: number;
-  public connectedPartiesByLetters: [string, string][];
 
   constructor(
     elections: IElections,
@@ -19,7 +18,6 @@ export class CalculatedElections implements IElections {
     this.legalVotes = elections.legalVotes;
     this.overallVotes = elections.overallVotes;
     this.privilegedVotersCount = elections.privilegedVotersCount;
-    this.connectedPartiesByLetters = elections.connectedPartiesByLetters;
     this.votersPercentage = elections.votersPercentage;
   }
 }

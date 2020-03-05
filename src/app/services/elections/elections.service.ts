@@ -11,10 +11,10 @@ export class ElectionsService {
 
   constructor(private client: HttpClient) { }
 
-  public getElectionsResults(): Promise<IElections> {
+  public getElectionsResults(url): Promise<IElections> {
     return this.client
       .get(
-        'https://cors-anywhere.herokuapp.com/https://votes23.bechirot.gov.il/nationalresults',
+        `https://cors-anywhere.herokuapp.com/${url}`,
         { responseType: 'text' })
       .pipe(
         map(ElectionsPageParser.parse))

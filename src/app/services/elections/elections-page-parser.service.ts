@@ -15,6 +15,10 @@ class PartiesParser {
 
   private static itemToParty(item: HTMLElementData): IParty {
     const infos: HTMLElementData[] = item.getElementsByTagName('td');
+    if (!infos[1].innerText.endsWith('%')) {
+      infos[1] = infos[2];
+      infos[2] = infos[3];
+    }
 
     const name: string = PartiesParser.getName(item);
     const letters: string = PartiesParser.getLetters(infos);
@@ -75,6 +79,7 @@ export class ElectionsPageParser {
       .replace( /^\D+/g, ''); // Replace all leading non-digits with nothing
 
     const privilegedVotersCount: number = +ElectionsPageParser.cleanWhitespaces(results[0].innerText);
+
     const votersPercentage: number = +ElectionsPageParser.cleanWhitespaces(results[2].innerText).replace('%', '');
     const overallVotes: number = +ElectionsPageParser.cleanWhitespaces(results[1].innerText);
     const legalVotes: number = +ElectionsPageParser.cleanWhitespaces(results[3].innerText);

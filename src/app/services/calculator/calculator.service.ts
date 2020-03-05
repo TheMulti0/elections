@@ -5,18 +5,19 @@ import { IParty } from '../../models/iparty.model';
 import { ICalculatedParty } from '../../models/icalculated-party.model';
 import { CalculatedParty } from '../../models/calculated-party.model';
 import { ConnectedParty } from '../../models/connected-party.model';
+import { IElectionsInfo } from '../../models/ielectionsinfo.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class Calculator {
 
-  public static calculate(elections: IElections): CalculatedElections {
-    const minVotes = 0.035 * elections.legalVotes;
+  public static calculate(elections: IElections, info: IElectionsInfo): CalculatedElections {
+    const minVotes = info.blockPercentage / 100 * elections.legalVotes;
 
     const partiesAboveMin: IParty[] = this.getPartiesAboveMin(elections, minVotes);
 
-    const calculatedParties = this.calculateAllParties(partiesAboveMin, [ ['מחל', 'טב'] ]);
+    const calculatedParties = this.calculateAllParties(partiesAboveMin, info.connectedPartiesByLetters);
 
     const partiesUnderMin: ICalculatedParty[] = this.getPartiesUnderMin(elections, minVotes)
       .map(party => new CalculatedParty(party, 0));
