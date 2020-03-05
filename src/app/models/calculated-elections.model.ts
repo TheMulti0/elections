@@ -1,5 +1,5 @@
 import { IElections } from './ielections.model';
-import { CalculatedParty } from './calculated-party.model';
+import { ICalculatedParty } from './icalculated-party.model';
 
 export class CalculatedElections implements IElections {
   knesset: number;
@@ -11,7 +11,7 @@ export class CalculatedElections implements IElections {
 
   constructor(
     elections: IElections,
-    public parties: CalculatedParty[]
+    public parties: ICalculatedParty[]
   ) {
     this.illegalVotes = elections.illegalVotes;
     this.knesset = elections.knesset;

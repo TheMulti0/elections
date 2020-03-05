@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { IElections } from '../../models/ielections.model';
 import { CalculatedElections } from '../../models/calculated-elections.model';
 import { IParty } from '../../models/iparty.model';
+import { ICalculatedParty } from '../../models/icalculated-party.model';
 import { CalculatedParty } from '../../models/calculated-party.model';
 
 @Injectable({
@@ -28,7 +29,7 @@ export class Calculator {
   }
 
   private static getCalculatedParties(partiesAboveMin: IParty[]) {
-    const calculatedParties: CalculatedParty[] = this.calculateParties(partiesAboveMin);
+    const calculatedParties: ICalculatedParty[] = this.calculateParties(partiesAboveMin);
 
     const stubSeats = 120 - this.flattenSeats(calculatedParties);
 
@@ -39,7 +40,7 @@ export class Calculator {
     return calculatedParties;
   }
 
-  private static calculateParties(partiesAboveMin: IParty[]): CalculatedParty[] {
+  private static calculateParties(partiesAboveMin: IParty[]): ICalculatedParty[] {
     const overallVotesAboveMin: number = this.flattenVotes(partiesAboveMin);
 
     const generalMeasure: number = Math.round(overallVotesAboveMin / 120);
@@ -61,7 +62,7 @@ export class Calculator {
       .reduce((lhs, rhs) => lhs + rhs);
   }
 
-  private static flattenSeats(calculatedParties: CalculatedParty[]) {
+  private static flattenSeats(calculatedParties: ICalculatedParty[]) {
     return calculatedParties
       .map(party => party.seats)
       .reduce((lhs, rhs) => lhs + rhs);
@@ -69,7 +70,7 @@ export class Calculator {
 
   private static spreadStubSeats(
     stubSeats: number,
-    calculatedParties: CalculatedParty[]): void {
+    calculatedParties: ICalculatedParty[]): void {
 
     for (let stubSeat = 0; stubSeat < stubSeats; stubSeat++) {
       let maxPartyMeasure = 0;
