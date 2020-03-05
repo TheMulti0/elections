@@ -1,27 +1,31 @@
 import { Injectable } from '@angular/core';
 import BeautifulDom from 'beautiful-dom';
 import HTMLElementData from 'beautiful-dom/dist/htmlelement';
-import { Party } from '../../models/party.model';
-import { Elections } from '../../models/elections.model';
+import { IParty } from '../../models/iparty.model';
+import { IElections } from '../../models/ielections.model';
 
 class PartiesParser {
 
-  public static parseParties(parser: BeautifulDom): Party[] {
+  public static parseParties(parser: BeautifulDom): IParty[] {
     return parser
       .getElementsByClassName('TableData')[0]
       .getElementsByTagName('tr')
       .map(PartiesParser.itemToParty);
   }
 
-  private static itemToParty(item: HTMLElementData): Party {
+  private static itemToParty(item: HTMLElementData): IParty {
     const infos: HTMLElementData[] = item.getElementsByTagName('td');
 
     const name: string = PartiesParser.getName(item);
     const letters: string = PartiesParser.getLetters(infos);
-    const percentage: number = PartiesParser.getPercentage(infos);
+    const votePercentage: number = PartiesParser.getPercentage(infos);
     const voteCount: number = PartiesParser.getVoteCount(infos);
 
-    return new Party(name, letters, percentage, voteCount);
+    return {
+      name,
+      letters,
+      votePercentage,
+      voteCount};
   }
 
   private static getName(item: HTMLElementData): string {
@@ -58,7 +62,7 @@ class PartiesParser {
 })
 export class ElectionsPageParser {
 
-  public static parse(html: string): Elections {
+  public static parse(html: string): IElections {
     const parser: BeautifulDom = new BeautifulDom(html);
 
     const results: HTMLElementData[] = parser
@@ -76,9 +80,9 @@ export class ElectionsPageParser {
     const legalVotes: number = +ElectionsPageParser.cleanWhitespaces(results[3].innerText);
     const illegalVotes: number = +ElectionsPageParser.cleanWhitespaces(results[4].innerText);
 
-    const parties: Party[] = PartiesParser.parseParties(parser);
+    const parties: IParty[] = PartiesParser.parseParties(parser);
 
-    return new Elections(
+    return {
       knesset,
       privilegedVotersCount,
       votersPercentage,
@@ -86,7 +90,7 @@ export class ElectionsPageParser {
       legalVotes,
       illegalVotes,
       parties
-    );
+    };
   }
 
   private static cleanWhitespaces(str: string): string {

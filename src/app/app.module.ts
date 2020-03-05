@@ -3,7 +3,8 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
-import { HttpClientJsonpModule, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
+import { MaterialModule } from './app.material.module.exports';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,7 @@ import { HttpClientJsonpModule, HttpClientModule } from '@angular/common/http';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    HttpClientJsonpModule
+    MaterialModule
   ],
   providers: [],
   bootstrap: [AppComponent]

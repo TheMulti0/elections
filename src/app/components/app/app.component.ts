@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ElectionsPageParser } from '../../services/elections/elections-page-parser.service';
-import { ElectionsService } from "../../services/elections/elections.service";
-import { Elections } from "../../models/elections.model";
+import { ElectionsService } from '../../services/elections/elections.service';
+import { IElections } from '../../models/ielections.model';
+import { Calculator } from '../../services/calculator/calculator.service';
+import { CalculatedElections } from '../../models/calculated-elections.model';
 
 @Component({
   selector: 'app-root',
@@ -9,13 +10,20 @@ import { Elections } from "../../models/elections.model";
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  private elections: Elections;
+  private displayedColumns: string[] = [
+    'name', 'letters', 'percentage', 'votes', 'seats'
+  ];
+  private elections: CalculatedElections;
 
   public title = 'elections';
 
   constructor(private electionsService: ElectionsService) { }
 
   public async ngOnInit(): Promise<void> {
-    this.elections = await this.electionsService.getElectionsResults();
+    const elections: IElections = await this.electionsService.getElectionsResults();
+
+    this.elections = Calculator.calculate(elections);
+
+    console.log('');
   }
 }
