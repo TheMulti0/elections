@@ -18,15 +18,25 @@ export class Calculator {
 
     const calculatedParties = this.calculateAllParties(partiesAboveMin, [ ['מחל', 'טב'] ]);
 
+    const partiesUnderMin: ICalculatedParty[] = this.getPartiesUnderMin(elections, minVotes)
+      .map(party => new CalculatedParty(party, 0));
+
+    const allParties = calculatedParties.concat(partiesUnderMin);
+
     return new CalculatedElections(
       elections,
-      calculatedParties
+      allParties
     );
   }
 
   private static getPartiesAboveMin(elections: IElections, minVotes: number): IParty[] {
     return elections.parties
       .filter(party => party.voteCount >= minVotes);
+  }
+
+  private static getPartiesUnderMin(elections: IElections, minVotes: number): IParty[] {
+    return elections.parties
+      .filter(party => party.voteCount < minVotes);
   }
 
   private static calculateAllParties(

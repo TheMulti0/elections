@@ -5,7 +5,6 @@
 <div *ngIf="elections">
 
   <h1> הבחירות לכנסת ה - {{ elections.knesset }} </h1>
-  <h2>{{ seats}} </h2>
 
   <mat-table [dataSource]="elections.parties" class="mat-elevation-z8">
 
@@ -39,7 +38,7 @@
       <mat-footer-cell *matFooterCellDef> {{ seats }} </mat-footer-cell>
     </ng-container>
 
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     <mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></mat-footer-row>
 
