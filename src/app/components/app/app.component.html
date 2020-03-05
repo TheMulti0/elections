@@ -12,30 +12,36 @@
     <ng-container matColumnDef="name">
       <mat-header-cell *matHeaderCellDef> שם </mat-header-cell>
       <mat-cell *matCellDef="let element"> {{ element.name }} </mat-cell>
+      <mat-footer-cell *matFooterCellDef> סיכום </mat-footer-cell>
     </ng-container>
 
     <ng-container matColumnDef="letters">
       <mat-header-cell *matHeaderCellDef> אותיות </mat-header-cell>
       <mat-cell *matCellDef="let element"> {{ element.letters }} </mat-cell>
+      <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
     </ng-container>
 
     <ng-container matColumnDef="percentage">
       <mat-header-cell *matHeaderCellDef> % </mat-header-cell>
       <mat-cell *matCellDef="let element"> {{ element.votePercentage }}% </mat-cell>
+      <mat-footer-cell *matFooterCellDef> {{ elections.votersPercentage }}% </mat-footer-cell>
     </ng-container>
 
     <ng-container matColumnDef="votes">
       <mat-header-cell *matHeaderCellDef> קולות </mat-header-cell>
       <mat-cell *matCellDef="let element"> {{ element.voteCount | number }} </mat-cell>
+      <mat-footer-cell *matFooterCellDef> {{ elections.legalVotes | number }} </mat-footer-cell>
     </ng-container>
 
     <ng-container matColumnDef="seats">
       <mat-header-cell *matHeaderCellDef> מנדטים </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{ element.seats | number }} </mat-cell>
+      <mat-cell *matCellDef="let element"> {{ element.seats + element.stubSeats | number }} </mat-cell>
+      <mat-footer-cell *matFooterCellDef> {{ seats }} </mat-footer-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    <mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></mat-footer-row>
 
   </mat-table>
 
