@@ -5,6 +5,7 @@
 <div *ngIf="elections">
 
   <h1> הבחירות לכנסת ה - {{ elections.knesset }} </h1>
+  <h2>{{ seats}} </h2>
 
   <mat-table [dataSource]="elections.parties" class="mat-elevation-z8">
 

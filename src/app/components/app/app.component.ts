@@ -14,6 +14,7 @@ export class AppComponent implements OnInit {
     'name', 'letters', 'percentage', 'votes', 'seats'
   ];
   private elections: CalculatedElections;
+  private seats;
 
   public title = 'elections';
 
@@ -23,6 +24,9 @@ export class AppComponent implements OnInit {
     const elections: IElections = await this.electionsService.getElectionsResults();
 
     this.elections = Calculator.calculate(elections);
+    this.seats = this.elections.parties
+      .map(p => p.seats + p.stubSeats)
+      .reduce((lhs, rhs) => lhs + rhs);
 
     console.log('');
   }

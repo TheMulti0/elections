@@ -7,5 +7,6 @@ export interface IElections {
   overallVotes: number;
   legalVotes: number;
   illegalVotes: number;
+  connectedPartiesByLetters: [string, string][];
   parties: IParty[];
 }

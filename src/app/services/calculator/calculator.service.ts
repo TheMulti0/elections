@@ -4,6 +4,7 @@ import { CalculatedElections } from '../../models/calculated-elections.model';
 import { IParty } from '../../models/iparty.model';
 import { ICalculatedParty } from '../../models/icalculated-party.model';
 import { CalculatedParty } from '../../models/calculated-party.model';
+import { ConnectedParty } from '../../models/connected-party.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class Calculator {
 
     const partiesAboveMin: IParty[] = this.getPartiesAboveMin(elections, minVotes);
 
-    const calculatedParties = this.getCalculatedParties(partiesAboveMin);
+    const calculatedParties = this.calculateAllParties(partiesAboveMin, [ ['מחל', 'טב'] ]);
 
     return new CalculatedElections(
       elections,
@@ -28,14 +29,30 @@ export class Calculator {
       .filter(party => party.voteCount >= minVotes);
   }
 
-  private static getCalculatedParties(partiesAboveMin: IParty[]) {
-    const calculatedParties: ICalculatedParty[] = this.calculateParties(partiesAboveMin);
+  private static calculateAllParties(
+    partiesAboveMin: IParty[],
+    connectedPartiesLetters: [string, string][]
+  ) {
 
+    const calculatedParties: ICalculatedParty[] = this.calculateParties(partiesAboveMin);
     const stubSeats = 120 - this.flattenSeats(calculatedParties);
 
     this.spreadStubSeats(
       stubSeats,
       calculatedParties);
+
+    const connectedParties: ConnectedParty[] = this.extractConnectedParties(calculatedParties, connectedPartiesLetters);
+    this.spreadStubsInConnectedParties(connectedParties);
+
+    const disconnectedParties: ICalculatedParty[] = [].concat.apply([], connectedParties
+      .map(party => [party.lhs, party.rhs] as [ICalculatedParty, ICalculatedParty]));
+
+    for (const party of disconnectedParties) {
+      if (calculatedParties.find(p => p.letters === party.letters) === undefined) {
+        continue;
+      }
+      calculatedParties.concat(party);
+    }
 
     return calculatedParties;
   }
@@ -43,7 +60,7 @@ export class Calculator {
   private static calculateParties(partiesAboveMin: IParty[]): ICalculatedParty[] {
     const overallVotesAboveMin: number = this.flattenVotes(partiesAboveMin);
 
-    const generalMeasure: number = Math.round(overallVotesAboveMin / 120);
+    const generalMeasure: number = Math.floor(overallVotesAboveMin / 120);
 
     return partiesAboveMin
       .map(party => new CalculatedParty(
@@ -68,19 +85,74 @@ export class Calculator {
       .reduce((lhs, rhs) => lhs + rhs);
   }
 
+  private static extractConnectedParties(
+    calculatedParties: ICalculatedParty[],
+    connectedPartiesLetters: [string, string][]
+  ): ConnectedParty[] {
+    const parties: [string, ICalculatedParty][] = calculatedParties
+      .map(party => [party.letters, party] as [string, ICalculatedParty]);
+
+    return connectedPartiesLetters
+      .map(kv => [this.findPartyByLetter(kv[0], parties), this.findPartyByLetter(kv[1], parties)] as [ICalculatedParty, ICalculatedParty])
+      .map(kv => new ConnectedParty(kv[0], kv[1]));
+  }
+
+  private static findPartyByLetter(
+    letter: string,
+    parties: [string, ICalculatedParty][]
+  ): ICalculatedParty {
+    return parties.find(kv => kv[0] === letter)[1];
+  }
+
   private static spreadStubSeats(
     stubSeats: number,
     calculatedParties: ICalculatedParty[]): void {
 
     for (let stubSeat = 0; stubSeat < stubSeats; stubSeat++) {
       let maxPartyMeasure = 0;
+      let partyWithMaxMeasure: ICalculatedParty;
 
       for (const calculatedParty of calculatedParties) {
         const measure = calculatedParty.voteCount / (calculatedParty.seats + 1);
 
         if (measure > maxPartyMeasure) {
           maxPartyMeasure = measure;
-          calculatedParty.seats++;
+          partyWithMaxMeasure = calculatedParty;
+        }
+      }
+
+      if (partyWithMaxMeasure !== undefined) {
+        partyWithMaxMeasure.stubSeats++;
+      }
+    }
+  }
+
+  private static spreadStubsInConnectedParties(connectedParties: ConnectedParty[]) {
+    for (const party of connectedParties) {
+
+      if (party.stubSeats === 0) {
+        continue;
+      }
+
+      const lhs = party.lhs;
+      const rhs = party.rhs;
+
+      const lhsVotes = lhs.voteCount;
+      const rhsVotes = rhs.voteCount;
+
+      const sharedMeasure = Math.floor(party.voteCount / (party.seats + party.stubSeats));
+
+      const lhsSeats = Math.floor(lhsVotes / sharedMeasure);
+      const rhsSeats = Math.floor(rhsVotes / sharedMeasure);
+
+      if (lhsSeats + rhsSeats < party.seats + party.stubSeats) {
+        const lhsMeasure = lhsVotes / (lhs.seats + 1);
+        const rhsMeasure = rhsVotes / (rhs.seats + 1);
+
+        if (lhsMeasure > rhsMeasure) {
+          lhs.stubSeats = 1;
+        } else {
+          rhs.stubSeats = 1;
         }
       }
     }

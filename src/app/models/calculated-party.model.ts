@@ -6,6 +6,7 @@ export class CalculatedParty implements ICalculatedParty {
     public letters: string;
     public votePercentage: number;
     public voteCount: number;
+    public stubSeats = 0;
 
     constructor(
         party: IParty,
