@@ -11,13 +11,18 @@ export class CalculatedElections implements IElections {
 
   constructor(
     elections: IElections,
-    public parties: ICalculatedParty[]
+    public parties: ICalculatedParty[],
+    public minimumVoteCount: number,
+    public generalMeasure: number,
+    public overallVotesAboveMin: number,
+    public overallVotesUnderMin: number,
+    public stubSeats: number
   ) {
-    this.illegalVotes = elections.illegalVotes;
     this.knesset = elections.knesset;
-    this.legalVotes = elections.legalVotes;
-    this.overallVotes = elections.overallVotes;
     this.privilegedVotersCount = elections.privilegedVotersCount;
+    this.overallVotes = elections.overallVotes;
+    this.legalVotes = elections.legalVotes;
+    this.illegalVotes = elections.illegalVotes;
     this.votersPercentage = elections.votersPercentage;
   }
 }

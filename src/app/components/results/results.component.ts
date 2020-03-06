@@ -10,7 +10,7 @@ import { Block } from '../../models/block.model';
 import { Enumerable, IDictionary, IEnumerable, IQueryable } from 'linq-typescript';
 import { IKeyValue } from 'linq-typescript/build/src/Enumerables';
 import { IPartyBlockInfo } from '../../models/iparty-block-info.model';
-import { IParty } from "../../models/iparty.model";
+import { IParty } from '../../models/iparty.model';
 
 @Component({
   selector: 'app-results',
@@ -21,7 +21,15 @@ export class ResultsComponent implements OnInit, OnDestroy {
   @Input()
   public $electionsInfos: Observable<IElectionsInfo>;
 
-  displayedColumns: string[] = [
+  showAdvanced: boolean;
+  infoColumns: string[] = [
+    'privileged', 'percentage',
+    'legal', 'illegal',
+    'block',
+    'votes', 'thrownVotes',
+    'measure', 'seats'
+  ]
+  partiesColumns: string[] = [
     'name', 'letters', 'percentage', 'votes', 'seats'
   ];
   chartSize: any[] = [200, 200];
@@ -61,14 +69,22 @@ export class ResultsComponent implements OnInit, OnDestroy {
       .filter(p => 'seats' in p)
       .map(p => p as ICalculatedParty);
 
+    const calculated = Calculator.calculate(elections, info);
+
     if (calculatedParties.length > 0) {
+      this.elections = new CalculatedElections(
+        elections,
+        calculatedParties,
+        calculated.minimumVoteCount,
+        calculated.generalMeasure,
+        calculated.overallVotesAboveMin,
+        calculated.overallVotesUnderMin,
+        calculated.stubSeats);
 
-      this.elections = new CalculatedElections(elections, calculatedParties);
       this.overallSeats = 120;
-
     } else {
 
-      this.elections = Calculator.calculate(elections, info);
+      this.elections = calculated
       this.overallSeats = this.elections.parties
         .map(p => p.seats + p.stubSeats)
         .reduce((lhs, rhs) => lhs + rhs);

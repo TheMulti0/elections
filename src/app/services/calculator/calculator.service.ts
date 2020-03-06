@@ -13,11 +13,19 @@ import { IElectionsInfo } from '../../models/ielections-info.model';
 export class Calculator {
 
   public static calculate(elections: IElections, info: IElectionsInfo): CalculatedElections {
-    const minVotes = info.blockPercentage / 100 * elections.legalVotes;
+    const minVotes = Math.floor(info.blockPercentage / 100 * elections.legalVotes);
 
     const partiesAboveMin: IParty[] = this.getPartiesAboveMin(elections, minVotes);
+    const overallVotesAboveMin = this.flattenVotes(partiesAboveMin);
+    const generalMeasure = Math.floor(overallVotesAboveMin / 120);
 
-    const calculatedParties = this.calculateAllParties(partiesAboveMin, info.spareAgreements);
+    const initialCalculatedParties = this.calculateParties(partiesAboveMin, generalMeasure);
+    const stubSeats = 120 - this.flattenSeats(initialCalculatedParties);
+
+    const calculatedParties = this.calculateAllParties(
+      initialCalculatedParties,
+      stubSeats,
+      info.spareAgreements);
 
     const partiesUnderMin: ICalculatedParty[] = this.getPartiesUnderMin(elections, minVotes)
       .map(party => new CalculatedParty(party, 0));
@@ -26,7 +34,12 @@ export class Calculator {
 
     return new CalculatedElections(
       elections,
-      allParties
+      allParties,
+      minVotes,
+      generalMeasure,
+      overallVotesAboveMin,
+      this.flattenVotes(partiesUnderMin),
+      stubSeats
     );
   }
 
@@ -41,12 +54,10 @@ export class Calculator {
   }
 
   private static calculateAllParties(
-    partiesAboveMin: IParty[],
+    calculatedParties: ICalculatedParty[],
+    stubSeats: number,
     spareAgreements: [string, string][]
   ) {
-
-    const calculatedParties: ICalculatedParty[] = this.calculateParties(partiesAboveMin);
-    const stubSeats = 120 - this.flattenSeats(calculatedParties);
 
     this.spreadStubSeats(
       stubSeats,
@@ -68,10 +79,10 @@ export class Calculator {
     return calculatedParties;
   }
 
-  private static calculateParties(partiesAboveMin: IParty[]): ICalculatedParty[] {
-    const overallVotesAboveMin: number = this.flattenVotes(partiesAboveMin);
-
-    const generalMeasure: number = Math.floor(overallVotesAboveMin / 120);
+  private static calculateParties(
+    partiesAboveMin: IParty[],
+    generalMeasure: number
+  ): ICalculatedParty[] {
 
     return partiesAboveMin
       .map(party => new CalculatedParty(
