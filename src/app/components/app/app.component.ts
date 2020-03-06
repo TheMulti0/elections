@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IElectionsInfo } from '../../models/ielectionsinfo.model';
+import { Subject } from "rxjs";
 
 @Component({
   selector: 'app-root',
@@ -7,9 +8,7 @@ import { IElectionsInfo } from '../../models/ielectionsinfo.model';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-
-
-  static infos: IElectionsInfo[] = [
+  infos: IElectionsInfo[] = [
     {
       name: 'הבחירות לכנסת ה - 23 (2020)',
       url: 'https://votes23.bechirot.gov.il/nationalresults',
@@ -33,13 +32,5 @@ export class AppComponent {
     }
   ];
 
-  public static selectedInfo: IElectionsInfo = AppComponent.infos[0];
-
-  getInfos(): IElectionsInfo[] {
-    return AppComponent.infos;
-  }
-
-  setSelectedInfo(info: IElectionsInfo) {
-    AppComponent.selectedInfo = info;
-  }
+  $electionsInfos: Subject<IElectionsInfo> = new Subject<IElectionsInfo>();
 }

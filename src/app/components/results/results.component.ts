@@ -6,7 +6,7 @@ import { Calculator } from '../../services/calculator/calculator.service';
 import { IElectionsInfo } from '../../models/ielectionsinfo.model';
 import { ActivatedRoute } from "@angular/router";
 import { map } from "rxjs/operators";
-import { Subscription } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import { AppComponent } from "../app/app.component";
 import { ICalculatedParty } from "../../models/icalculated-party.model";
 import { IParty } from "../../models/iparty.model";
@@ -17,35 +17,45 @@ import { IParty } from "../../models/iparty.model";
   styleUrls: ['./results.component.scss']
 })
 export class ResultsComponent implements OnInit, OnDestroy {
+  @Input()
+  public $electionsInfos: Observable<IElectionsInfo>;
+
   displayedColumns: string[] = [
     'name', 'letters', 'percentage', 'votes', 'seats'
   ];
   elections: CalculatedElections;
-  overallSeats = 120;
+  overallSeats: number;
 
   private infoSubscription: Subscription;
 
   constructor(
-    private activatedRoute: ActivatedRoute,
     private electionsService: ElectionsService) { }
 
   public async ngOnInit(): Promise<void> {
-    const info: IElectionsInfo = AppComponent.selectedInfo;
+    this.infoSubscription = this.$electionsInfos.subscribe(this.onRefresh.bind(this));
+  }
+
+  private async onRefresh(info: IElectionsInfo): Promise<void> {
 
     const elections: IElections = await this.electionsService.getElectionsResults(info.url);
 
     const calculatedParties: ICalculatedParty[] = elections.parties
       .filter(p => 'seats' in p)
       .map(p => p as ICalculatedParty);
+
     if (calculatedParties.length > 0) {
+
       this.elections = new CalculatedElections(elections, calculatedParties);
       this.overallSeats = 120;
+
     } else {
+
       this.elections = Calculator.calculate(elections, info);
       this.overallSeats = this.elections.parties
         .map(p => p.seats + p.stubSeats)
         .reduce((lhs, rhs) => lhs + rhs);
     }
+
   }
 
   public ngOnDestroy(): void {
