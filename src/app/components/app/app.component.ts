@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { IElectionsInfo } from '../../models/ielectionsinfo.model';
-import { NavigationExtras, Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +7,9 @@ import { NavigationExtras, Router } from '@angular/router';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  private infos: IElectionsInfo[] = [
+
+
+  static infos: IElectionsInfo[] = [
     {
       name: 'הבחירות לכנסת ה - 23 (2020)',
       url: 'https://votes23.bechirot.gov.il/nationalresults',
@@ -21,7 +22,7 @@ export class AppComponent {
     },
     {
       name: 'הבחירות לכנסת ה - 22 (2019 ספטמבר)',
-      url: 'https://votes22.bechirot.gov.il',
+      url: 'https://votes22.bechirot.gov.il/nationalresults',
       blockPercentage: 3.25,
       connectedPartiesByLetters: [
         ['מחל', 'טב'],
@@ -32,14 +33,13 @@ export class AppComponent {
     }
   ];
 
-  constructor(private router: Router) { }
+  public static selectedInfo: IElectionsInfo = AppComponent.infos[0];
 
-  private navigate(info: IElectionsInfo): Promise<boolean> {
-    const navigationExtras: NavigationExtras = {
-      state: {
-        info: JSON.stringify(info)
-      }
-    };
-    return this.router.navigate(['results'], navigationExtras);
+  getInfos(): IElectionsInfo[] {
+    return AppComponent.infos;
+  }
+
+  setSelectedInfo(info: IElectionsInfo) {
+    AppComponent.selectedInfo = info;
   }
 }

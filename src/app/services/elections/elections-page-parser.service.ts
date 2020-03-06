@@ -15,15 +15,26 @@ class PartiesParser {
 
   private static itemToParty(item: HTMLElementData): IParty {
     const infos: HTMLElementData[] = item.getElementsByTagName('td');
+    let beginIndex = 1;
     if (!infos[1].innerText.endsWith('%')) {
-      infos[1] = infos[2];
-      infos[2] = infos[3];
+      beginIndex++;
     }
 
     const name: string = PartiesParser.getName(item);
     const letters: string = PartiesParser.getLetters(infos);
-    const votePercentage: number = PartiesParser.getPercentage(infos);
-    const voteCount: number = PartiesParser.getVoteCount(infos);
+    const seats: number = PartiesParser.getSeats(infos); // Can be null in some of the pages
+    const votePercentage: number = PartiesParser.getPercentage(infos, beginIndex);
+    const voteCount: number = PartiesParser.getVoteCount(infos, beginIndex);
+
+    if (!isNaN(seats)) {
+      return {
+        name,
+        letters,
+        votePercentage,
+        voteCount,
+        seats,
+        stubSeats: 0} as IParty;
+    }
 
     return {
       name,
@@ -40,14 +51,20 @@ class PartiesParser {
     return infos[0].innerText;
   }
 
-  private static getPercentage(infos: HTMLElementData[]): number {
-    const percentageText: string = infos[1].innerText;
+  private static getSeats(infos: HTMLElementData[]) {
+    const seatsText: string = infos[1].innerText;
+
+    return + seatsText;
+  }
+
+  private static getPercentage(infos: HTMLElementData[], beginIndex: number): number {
+    const percentageText: string = infos[beginIndex].innerText;
 
     return + percentageText.replace('%', '');
   }
 
-  private static getVoteCount(infos: HTMLElementData[]): number {
-    const voteCountText: string = infos[2]
+  private static getVoteCount(infos: HTMLElementData[], beginIndex: number): number {
+    const voteCountText: string = infos[beginIndex + 1]
       .getElementsByClassName('FloatDir')[0].innerText;
 
     let fixedVoteCountText = '';

@@ -1,5 +1,5 @@
-<div *ngFor="let info of infos">
-  <a routerLink="results" [queryParams]="{info: info | json}">
+<div *ngFor="let info of getInfos()">
+  <a routerLink="results" (click)="setSelectedInfo(info)">
     {{ info.name }}
   </a>
 </div>

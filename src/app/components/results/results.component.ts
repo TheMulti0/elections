@@ -7,6 +7,9 @@ import { IElectionsInfo } from '../../models/ielectionsinfo.model';
 import { ActivatedRoute } from "@angular/router";
 import { map } from "rxjs/operators";
 import { Subscription } from "rxjs";
+import { AppComponent } from "../app/app.component";
+import { ICalculatedParty } from "../../models/icalculated-party.model";
+import { IParty } from "../../models/iparty.model";
 
 @Component({
   selector: 'app-results',
@@ -14,11 +17,11 @@ import { Subscription } from "rxjs";
   styleUrls: ['./results.component.scss']
 })
 export class ResultsComponent implements OnInit, OnDestroy {
-  private displayedColumns: string[] = [
+  displayedColumns: string[] = [
     'name', 'letters', 'percentage', 'votes', 'seats'
   ];
-  private elections: CalculatedElections;
-  private overallSeats = 120;
+  elections: CalculatedElections;
+  overallSeats = 120;
 
   private infoSubscription: Subscription;
 
@@ -27,20 +30,22 @@ export class ResultsComponent implements OnInit, OnDestroy {
     private electionsService: ElectionsService) { }
 
   public async ngOnInit(): Promise<void> {
-    this.infoSubscription = this.activatedRoute.queryParams.subscribe(async params => {
-      let paramsInfo = params.info;
-      if (paramsInfo === undefined) {
+    const info: IElectionsInfo = AppComponent.selectedInfo;
 
-      }
-      const info: IElectionsInfo = JSON.parse(paramsInfo);
+    const elections: IElections = await this.electionsService.getElectionsResults(info.url);
 
-      const elections: IElections = await this.electionsService.getElectionsResults(info.url);
-
+    const calculatedParties: ICalculatedParty[] = elections.parties
+      .filter(p => 'seats' in p)
+      .map(p => p as ICalculatedParty);
+    if (calculatedParties.length > 0) {
+      this.elections = new CalculatedElections(elections, calculatedParties);
+      this.overallSeats = 120;
+    } else {
       this.elections = Calculator.calculate(elections, info);
       this.overallSeats = this.elections.parties
         .map(p => p.seats + p.stubSeats)
         .reduce((lhs, rhs) => lhs + rhs);
-    });
+    }
   }
 
   public ngOnDestroy(): void {
