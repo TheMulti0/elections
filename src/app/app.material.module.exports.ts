@@ -32,6 +32,7 @@ import { CdkTreeModule } from '@angular/cdk/tree';
 import { NgModule } from '@angular/core';
 import { LayoutModule } from '@angular/cdk/layout';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 
 const MATERIAL = [CdkTreeModule,
@@ -67,7 +68,8 @@ const MATERIAL = [CdkTreeModule,
   MatNativeDateModule,
   MatSnackBarModule,
   MatTooltipModule,
-  MatPaginatorModule];
+  MatPaginatorModule,
+  BrowserAnimationsModule];
 
 @NgModule({
   exports: MATERIAL,

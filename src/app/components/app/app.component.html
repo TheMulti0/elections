@@ -1,18 +1,34 @@
-<div *ngFor="let info of infos">
-  <a (click)="$electionsInfos.next(info)">
+<mat-menu #infosMenu="matMenu">
+  <button
+    *ngFor="let info of electionsInfos"
+    (click)="navigateTo(info)"
+    mat-menu-item>
     {{ info.name }}
-  </a>
+  </button>
+</mat-menu>
+
+<mat-toolbar class="mat-elevation-z3">
+
+  <button class="spaced menuItem"
+          mat-button
+          (click)="navigateToHome()"
+          matTooltip="נווט לדף הבית">
+    <mat-icon>home</mat-icon>
+  </button>
+  <button class="spaced menuItem"
+          mat-button
+          [matMenuTriggerFor]="infosMenu"
+          matTooltip="בחר מערכת בחירות">
+    בחירות
+  </button>
+
+</mat-toolbar>
+
+<br />
+
+<div [hidden]="atHome">
+  <app-results #results [$electionsInfos]="$electionsInfos"></app-results>
+  <router-outlet></router-outlet>
 </div>
 
-<app-results [$electionsInfos]="$electionsInfos"></app-results>
-
-<router-outlet></router-outlet>
-
-<footer>
-  <br />
-  <small>
-    <a href="https://github.com/TheMulti0">
-      נוצר על ידי TheMulti0
-    </a>
-  </small>
-</footer>
+<br />

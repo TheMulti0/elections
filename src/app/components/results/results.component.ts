@@ -23,19 +23,24 @@ export class ResultsComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = [
     'name', 'letters', 'percentage', 'votes', 'seats'
   ];
+
   elections: CalculatedElections;
   overallSeats: number;
 
   private infoSubscription: Subscription;
 
   constructor(
-    private electionsService: ElectionsService) { }
+    private electionsService: ElectionsService
+  ) {
+  }
 
   public async ngOnInit(): Promise<void> {
     this.infoSubscription = this.$electionsInfos.subscribe(this.onRefresh.bind(this));
   }
 
   private async onRefresh(info: IElectionsInfo): Promise<void> {
+
+    this.elections = null;
 
     const elections: IElections = await this.electionsService.getElectionsResults(info.url);
 

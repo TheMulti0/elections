@@ -1,14 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { IElectionsInfo } from '../../models/ielectionsinfo.model';
-import { Subject } from "rxjs";
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  infos: IElectionsInfo[] = [
+export class AppComponent implements OnInit {
+  electionsInfos: IElectionsInfo[] = [
     {
       name: 'הבחירות לכנסת ה - 23 (2020)',
       url: 'https://votes23.bechirot.gov.il/nationalresults',
@@ -33,4 +33,20 @@ export class AppComponent {
   ];
 
   $electionsInfos: Subject<IElectionsInfo> = new Subject<IElectionsInfo>();
+  atHome = true;
+
+  @ViewChild('results')
+  results: ElementRef;
+
+  public ngOnInit(): void {
+  }
+
+  navigateToHome() {
+    this.atHome = true;
+  }
+
+  navigateTo(info: IElectionsInfo) {
+    this.atHome = false;
+    this.$electionsInfos.next(info);
+  }
 }
