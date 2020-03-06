@@ -62,6 +62,9 @@ export class ResultsComponent implements OnInit, OnDestroy {
   private async onRefresh(info: IElectionsInfo): Promise<void> {
 
     this.elections = null;
+    this.generalBlocks = null;
+    this.specificBlocks = null;
+    this.parties = null;
 
     const elections: IElections = await this.electionsService.getElectionsResults(info.url);
 
