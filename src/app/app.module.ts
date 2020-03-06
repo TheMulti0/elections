@@ -6,6 +6,7 @@ import { AppComponent } from './components/app/app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MaterialModule } from './app.material.module.exports';
 import { ResultsComponent } from './components/results/results.component';
+import { NgxChartsModule } from "@swimlane/ngx-charts";
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { ResultsComponent } from './components/results/results.component';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    MaterialModule
+    MaterialModule,
+    NgxChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

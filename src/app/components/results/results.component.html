@@ -2,49 +2,80 @@
   <h1> טוען... </h1>
 </div>
 
-<div *ngIf="elections">
+<table *ngIf="elections">
 
-  <h1> הבחירות לכנסת ה - {{ elections.knesset }} </h1>
+    <tr>
+      <h1> הבחירות לכנסת ה - {{ elections.knesset }} </h1>
+    </tr>
 
-  <mat-table [dataSource]="elections.parties">
+    <tr>
+      <td>
+        <ngx-charts-pie-chart
+          [view]="chartSize"
+          [scheme]="chartScheme"
+          [results]="generalBlocks"
+          [gradient]="true">
+        </ngx-charts-pie-chart>
+      </td>
+      <td>
+        <ngx-charts-pie-chart
+          [view]="chartSize"
+          [scheme]="chartScheme"
+          [results]="specificBlocks"
+          [gradient]="true">
+        </ngx-charts-pie-chart>
+      </td>
+      <td>
+        <ngx-charts-pie-chart
+          [view]="chartSize"
+          [scheme]="chartScheme"
+          [results]="parties"
+          [gradient]="true">
+        </ngx-charts-pie-chart>
+      </td>
+    </tr>
 
-    <ng-container matColumnDef="name">
-      <mat-header-cell *matHeaderCellDef> שם </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{ element.name }} </mat-cell>
-      <mat-footer-cell *matFooterCellDef> סיכום </mat-footer-cell>
-    </ng-container>
+    <tr>
+      <mat-table [dataSource]="elections.parties">
 
-    <ng-container matColumnDef="letters">
-      <mat-header-cell *matHeaderCellDef> אותיות </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{ element.letters }} </mat-cell>
-      <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
-    </ng-container>
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef> שם </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.name }} </mat-cell>
+          <mat-footer-cell *matFooterCellDef> סיכום </mat-footer-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="percentage">
-      <mat-header-cell *matHeaderCellDef> % </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{ element.votePercentage }}% </mat-cell>
-      <mat-footer-cell *matFooterCellDef> {{ elections.votersPercentage }}% </mat-footer-cell>
-    </ng-container>
+        <ng-container matColumnDef="letters">
+          <mat-header-cell *matHeaderCellDef> אותיות </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.letters }} </mat-cell>
+          <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="votes">
-      <mat-header-cell *matHeaderCellDef> קולות </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{ element.voteCount | number }} </mat-cell>
-      <mat-footer-cell *matFooterCellDef> {{ elections.legalVotes | number }} </mat-footer-cell>
-    </ng-container>
+        <ng-container matColumnDef="percentage">
+          <mat-header-cell *matHeaderCellDef> % </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.votePercentage }}% </mat-cell>
+          <mat-footer-cell *matFooterCellDef> {{ elections.votersPercentage }}% </mat-footer-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="seats">
-      <mat-header-cell *matHeaderCellDef> מנדטים </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{ element.seats + element.stubSeats | number }} </mat-cell>
-      <mat-footer-cell *matFooterCellDef> {{ overallSeats }} </mat-footer-cell>
-    </ng-container>
+        <ng-container matColumnDef="votes">
+          <mat-header-cell *matHeaderCellDef> קולות </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.voteCount | number }} </mat-cell>
+          <mat-footer-cell *matFooterCellDef> {{ elections.legalVotes | number }} </mat-footer-cell>
+        </ng-container>
 
-    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-    <mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></mat-footer-row>
+        <ng-container matColumnDef="seats">
+          <mat-header-cell *matHeaderCellDef> מנדטים </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.seats + element.stubSeats | number }} </mat-cell>
+          <mat-footer-cell *matFooterCellDef> {{ overallSeats }} </mat-footer-cell>
+        </ng-container>
 
-  </mat-table>
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        <mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></mat-footer-row>
+
+      </mat-table>
+    </tr>
 
 
-</div>
+</table>
 
 <router-outlet></router-outlet>

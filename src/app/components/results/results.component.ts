@@ -3,12 +3,13 @@ import { CalculatedElections } from '../../models/calculated-elections.model';
 import { ElectionsService } from '../../services/elections/elections.service';
 import { IElections } from '../../models/ielections.model';
 import { Calculator } from '../../services/calculator/calculator.service';
-import { IElectionsInfo } from '../../models/ielectionsinfo.model';
-import { ActivatedRoute } from "@angular/router";
-import { map } from "rxjs/operators";
-import { Observable, Subscription } from "rxjs";
-import { AppComponent } from "../app/app.component";
-import { ICalculatedParty } from "../../models/icalculated-party.model";
+import { IElectionsInfo} from '../../models/ielections-info.model';
+import { Observable, Subscription } from 'rxjs';
+import { ICalculatedParty } from '../../models/icalculated-party.model';
+import { Block } from '../../models/block.model';
+import { Enumerable, IDictionary, IEnumerable, IQueryable } from 'linq-typescript';
+import { IKeyValue } from 'linq-typescript/build/src/Enumerables';
+import { IPartyBlockInfo } from '../../models/iparty-block-info.model';
 import { IParty } from "../../models/iparty.model";
 
 @Component({
@@ -23,9 +24,17 @@ export class ResultsComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = [
     'name', 'letters', 'percentage', 'votes', 'seats'
   ];
+  chartSize: any[] = [200, 200];
+  chartScheme = {
+    domain: ['#3d8cf4', '#c9eefc', '#181b1c', '#d6b01b', '#244096', '#f4503a', '#ca60f7', '#60f786']
+  };
 
   elections: CalculatedElections;
   overallSeats: number;
+
+  generalBlocks: { name: string, value: number }[];
+  specificBlocks: { name: string, value: number }[];
+  parties: { name: string, value: number }[];
 
   private infoSubscription: Subscription;
 
@@ -36,6 +45,10 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   public async ngOnInit(): Promise<void> {
     this.infoSubscription = this.$electionsInfos.subscribe(this.onRefresh.bind(this));
+  }
+
+  public ngOnDestroy(): void {
+    this.infoSubscription.unsubscribe();
   }
 
   private async onRefresh(info: IElectionsInfo): Promise<void> {
@@ -61,9 +74,52 @@ export class ResultsComponent implements OnInit, OnDestroy {
         .reduce((lhs, rhs) => lhs + rhs);
     }
 
+    this.generalBlocks = this.extracted(info, (pInfo: IPartyBlockInfo) => pInfo.general);
+    this.specificBlocks = this.extracted(info, (pInfo: IPartyBlockInfo) => pInfo.specific);
+    this.parties = this.elections.parties.map((party: ICalculatedParty) => {
+      return { name: party.name, value: party.seats + party.stubSeats };
+    });
   }
 
-  public ngOnDestroy(): void {
-    this.infoSubscription.unsubscribe();
+  private extracted(
+    info: IElectionsInfo,
+    blockSupplier: (IPartyBlockInfo) => Block
+    ): { name: string, value: number }[] {
+
+    const lettersToParties: IDictionary<string, ICalculatedParty> = Enumerable
+      .fromSource(this.elections.parties)
+      .toDictionary(party => party.letters, party => party);
+
+    return Enumerable
+      .fromSource(info.partiesBlocks)
+      .select(pi => this.toBlockAndSeats(pi, blockSupplier, lettersToParties))
+      .groupBy(kv => kv.key)
+      .select(g => {
+        return this.sumBlocksSeats(g);
+      })
+      .toArray();
+  }
+
+  private toBlockAndSeats(
+    partyInfo: IPartyBlockInfo,
+    blockSupplier: (IPartyBlockInfo) => Block,
+    lettersToParties: IDictionary<string, ICalculatedParty>
+  ): IKeyValue<Block, number> {
+    const party: ICalculatedParty = lettersToParties.get(partyInfo.letters);
+
+    return {
+      key: blockSupplier(partyInfo),
+      value: party.seats + party.stubSeats
+    };
+  }
+
+  private sumBlocksSeats(
+    group: IKeyValue<Block, IQueryable<{ value: number; key: Block }>>
+  ): { name: string, value: number } {
+    return {
+      name: group.key,
+      value: group.value
+        .sum(kv => kv.value)
+    };
   }
 }
