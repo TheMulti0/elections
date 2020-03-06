@@ -1,41 +1,44 @@
-<div *ngIf="!elections">
+<div class="text-center" *ngIf="!elections">
   <h1> טוען... </h1>
 </div>
 
-<table *ngIf="elections">
+<div class="container text-right" *ngIf="elections">
 
-    <tr>
+  <div class="row">
+    <div class="col text-center">
       <h1> הבחירות לכנסת ה - {{ elections.knesset }} </h1>
-    </tr>
+    </div>
+  </div>
 
-    <tr>
-      <td>
-        <ngx-charts-pie-chart
-          [view]="chartSize"
-          [scheme]="chartScheme"
-          [results]="generalBlocks"
-          [gradient]="true">
-        </ngx-charts-pie-chart>
-      </td>
-      <td>
-        <ngx-charts-pie-chart
-          [view]="chartSize"
-          [scheme]="chartScheme"
-          [results]="specificBlocks"
-          [gradient]="true">
-        </ngx-charts-pie-chart>
-      </td>
-      <td>
-        <ngx-charts-pie-chart
-          [view]="chartSize"
-          [scheme]="chartScheme"
-          [results]="parties"
-          [gradient]="true">
-        </ngx-charts-pie-chart>
-      </td>
-    </tr>
+  <div class="row">
+    <div class="col">
+      <ngx-charts-pie-chart
+        [view]="chartSize"
+        [scheme]="chartScheme"
+        [results]="generalBlocks"
+        [gradient]="true">
+      </ngx-charts-pie-chart>
+    </div>
+    <div class="col">
+      <ngx-charts-pie-chart
+        [view]="chartSize"
+        [scheme]="chartScheme"
+        [results]="specificBlocks"
+        [gradient]="true">
+      </ngx-charts-pie-chart>
+    </div>
+    <div class="col">
+      <ngx-charts-pie-chart
+        [view]="chartSize"
+        [scheme]="chartScheme"
+        [results]="parties"
+        [gradient]="true">
+      </ngx-charts-pie-chart>
+    </div>
+  </div>
 
-    <tr>
+  <div class="row">
+    <div class="col">
       <mat-table [dataSource]="elections.parties">
 
         <ng-container matColumnDef="name">
@@ -73,9 +76,7 @@
         <mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></mat-footer-row>
 
       </mat-table>
-    </tr>
+    </div>
+  </div>
 
-
-</table>
-
-<router-outlet></router-outlet>
+</div>
