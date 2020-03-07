@@ -24,58 +24,33 @@
       </mat-checkbox>
     </div>
 
+    <hr>
+
     <div class="row" *ngIf="showAdvanced">
       <h4>מידע על מערכת הבחירות</h4>
 
-      <mat-table [dataSource]="[1]">
+      <mat-table *ngIf="showAdvanced" [dataSource]="[ elections ]">
 
-        <ng-container matColumnDef="privileged">
-          <mat-header-cell *matHeaderCellDef> בעלי זכות בחירה </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ elections.privilegedVotersCount | number }} </mat-cell>
+        <ng-container *ngFor='let column of electionsInfoTable.columns'
+                      [matColumnDef]="column.name">
+
+          <mat-header-cell *matHeaderCellDef>
+            {{ column.headerText }}
+          </mat-header-cell>
+
+          <mat-cell *matCellDef="let elections">
+            {{ column.getContent(elections) }}
+          </mat-cell>
+
+          <mat-footer-cell *matFooterCellDef>
+            {{ column.footerText }}
+          </mat-footer-cell>
+
         </ng-container>
 
-        <ng-container matColumnDef="percentage">
-          <mat-header-cell *matHeaderCellDef> אחוז הבוחרים </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ elections.votersPercentage }}% </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="legal">
-          <mat-header-cell *matHeaderCellDef> קולות כשרים </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ elections.legalVotes | number }} </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="illegal">
-          <mat-header-cell *matHeaderCellDef> קולות פסולים </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ elections.illegalVotes | number }} </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="block">
-          <mat-header-cell *matHeaderCellDef> קולות החסימה </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ elections.minimumVoteCount | number }} </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="votes">
-          <mat-header-cell *matHeaderCellDef> קולות למפלגות שעברו את החסימה </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ elections.overallVotesAboveMin | number }} </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="thrownVotes">
-          <mat-header-cell *matHeaderCellDef> קולות מבוזבזים </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ elections.overallVotesUnderMin | number }} </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="measure">
-          <mat-header-cell *matHeaderCellDef> מודד כללי </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ elections.generalMeasure | number }} </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="seats">
-          <mat-header-cell *matHeaderCellDef> מנדטים עודפים </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ elections.stubSeats | number }} </mat-cell>
-        </ng-container>
-
-        <mat-header-row *matHeaderRowDef="infoColumns;"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: infoColumns;"></mat-row>
+        <mat-header-row *matHeaderRowDef="electionsInfoTable.getColumnNames(); sticky: true"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: electionsInfoTable.getColumnNames();"></mat-row>
+        <mat-footer-row *matFooterRowDef="electionsInfoTable.getColumnNames(); sticky: true"></mat-footer-row>
 
       </mat-table>
 
@@ -116,103 +91,55 @@
     <div class="row">
       <h4>תוצאות הבחירות</h4>
 
-      <mat-table *ngIf="!showAdvanced" [dataSource]="elections.parties">
+      <mat-table *ngIf="showAdvanced" [dataSource]="elections.parties">
 
-        <ng-container matColumnDef="name">
-          <mat-header-cell *matHeaderCellDef> שם </mat-header-cell>
-          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.name }} </mat-cell>
-          <mat-footer-cell *matFooterCellDef> סיכום </mat-footer-cell>
+        <ng-container *ngFor='let column of extraPartiesTable.columns'
+                      [matColumnDef]="column.name">
+
+          <mat-header-cell *matHeaderCellDef>
+            {{ column.headerText }}
+          </mat-header-cell>
+
+          <mat-cell *matCellDef="let party"
+                    [style.background-color]="getPartyColor(party)">
+            {{ column.getContent(party) }}
+          </mat-cell>
+
+          <mat-footer-cell *matFooterCellDef>
+            {{ column.footerText }}
+          </mat-footer-cell>
+
         </ng-container>
 
-        <ng-container matColumnDef="letters">
-          <mat-header-cell *matHeaderCellDef> אותיות </mat-header-cell>
-          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.letters }} </mat-cell>
-          <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="percentage">
-          <mat-header-cell *matHeaderCellDef> אחוז מבין כל הקולות </mat-header-cell>
-          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.votePercentage }}% </mat-cell>
-          <mat-footer-cell *matFooterCellDef> {{ elections.votersPercentage }}% </mat-footer-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="votes">
-          <mat-header-cell *matHeaderCellDef> קולות </mat-header-cell>
-          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.voteCount | number }} </mat-cell>
-          <mat-footer-cell *matFooterCellDef> {{ elections.legalVotes | number }} </mat-footer-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="seats">
-          <mat-header-cell *matHeaderCellDef> סה"כ מנדטים </mat-header-cell>
-          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.seats + element.stubSeats + element.stubConnectionSeats| number }} </mat-cell>
-          <mat-footer-cell *matFooterCellDef> {{ overallSeats }} </mat-footer-cell>
-        </ng-container>
-
-        <mat-header-row *matHeaderRowDef="partiesColumns; sticky: true"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: partiesColumns;"></mat-row>
-        <mat-footer-row *matFooterRowDef="partiesColumns; sticky: true"></mat-footer-row>
+        <mat-header-row *matHeaderRowDef="extraPartiesTable.getColumnNames(); sticky: true"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: extraPartiesTable.getColumnNames();"></mat-row>
+        <mat-footer-row *matFooterRowDef="extraPartiesTable.getColumnNames(); sticky: true"></mat-footer-row>
 
       </mat-table>
 
-      <mat-table *ngIf="showAdvanced" [dataSource]="elections.parties">
+      <mat-table *ngIf="!showAdvanced" [dataSource]="elections.parties">
 
-        <ng-container matColumnDef="name">
-          <mat-header-cell *matHeaderCellDef> שם </mat-header-cell>
-          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.name }} </mat-cell>
-          <mat-footer-cell *matFooterCellDef> סיכום </mat-footer-cell>
+        <ng-container *ngFor='let column of partiesTable.columns'
+                      [matColumnDef]="column.name">
+
+          <mat-header-cell *matHeaderCellDef>
+            {{ column.headerText }}
+          </mat-header-cell>
+
+          <mat-cell *matCellDef="let party"
+                    [style.background-color]="getPartyColor(party)">
+            {{ column.getContent(party) }}
+          </mat-cell>
+
+          <mat-footer-cell *matFooterCellDef>
+            {{ column.footerText }}
+          </mat-footer-cell>
+
         </ng-container>
 
-        <ng-container matColumnDef="letters">
-          <mat-header-cell *matHeaderCellDef> אותיות </mat-header-cell>
-          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.letters }} </mat-cell>
-          <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="percentage">
-          <mat-header-cell *matHeaderCellDef> אחוז מבין כל הקולות </mat-header-cell>
-          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.votePercentage }}% </mat-cell>
-          <mat-footer-cell *matFooterCellDef> {{ elections.votersPercentage }}% </mat-footer-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="votes">
-          <mat-header-cell *matHeaderCellDef> קולות </mat-header-cell>
-          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.voteCount | number }} </mat-cell>
-          <mat-footer-cell *matFooterCellDef> {{ elections.legalVotes | number }} </mat-footer-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="measure">
-          <mat-header-cell *matHeaderCellDef> עלות מנדט </mat-header-cell>
-          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.measure | round | number }} </mat-cell>
-          <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="votesSeats">
-          <mat-header-cell *matHeaderCellDef> מנדטים מקולות </mat-header-cell>
-          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.seats + element.stubSeats | number }} </mat-cell>
-          <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="connectionSeats">
-          <mat-header-cell *matHeaderCellDef> מנדטים מהסכמי עודפים </mat-header-cell>
-          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.stubConnectionSeats | number }} </mat-cell>
-          <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="stubSeats">
-          <mat-header-cell *matHeaderCellDef> מנדטים מעודפים </mat-header-cell>
-          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.stubSeats | number }} </mat-cell>
-          <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="seats">
-          <mat-header-cell *matHeaderCellDef> סה"כ מנדטים </mat-header-cell>
-          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.seats + element.stubSeats + element.stubConnectionSeats| number }} </mat-cell>
-          <mat-footer-cell *matFooterCellDef> {{ overallSeats }} </mat-footer-cell>
-        </ng-container>
-
-        <mat-header-row *matHeaderRowDef="extraPartiesColumns; sticky: true"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: extraPartiesColumns;"></mat-row>
-        <mat-footer-row *matFooterRowDef="extraPartiesColumns; sticky: true"></mat-footer-row>
+        <mat-header-row *matHeaderRowDef="partiesTable.getColumnNames(); sticky: true"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: partiesTable.getColumnNames();"></mat-row>
+        <mat-footer-row *matFooterRowDef="partiesTable.getColumnNames(); sticky: true"></mat-footer-row>
 
       </mat-table>
     </div>

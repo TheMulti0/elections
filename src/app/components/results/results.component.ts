@@ -3,14 +3,18 @@ import { CalculatedElections } from '../../models/calculated-elections.model';
 import { ElectionsService } from '../../services/elections/elections.service';
 import { IElections } from '../../models/ielections.model';
 import { Calculator } from '../../services/calculator/calculator.service';
-import { IElectionsInfo} from '../../models/ielections-info.model';
+import { IElectionsInfo } from '../../models/ielections-info.model';
 import { Observable, Subscription } from 'rxjs';
 import { ICalculatedParty } from '../../models/icalculated-party.model';
 import { Block } from '../../models/block.model';
-import { Enumerable, IDictionary, IEnumerable, IQueryable } from 'linq-typescript';
+import { Enumerable, IDictionary, IQueryable } from 'linq-typescript';
 import { IKeyValue } from 'linq-typescript/build/src/Enumerables';
 import { IPartyBlockInfo } from '../../models/iparty-block-info.model';
 import { IParty } from '../../models/iparty.model';
+import { PartiesTable } from "./parties-table";
+import { Table } from "../table/table";
+import { ExtraPartiesTable } from "./extra-parties-table";
+import { ElectionsInfoTable } from "./elections-info-table";
 
 class ChartItem {
   constructor(
@@ -28,22 +32,10 @@ export class ResultsComponent implements OnInit, OnDestroy {
   public $electionsInfos: Observable<IElectionsInfo>;
 
   showAdvanced: boolean;
-  infoColumns: string[] = [
-    'privileged', 'percentage',
-    'legal', 'illegal',
-    'block',
-    'votes', 'thrownVotes',
-    'measure', 'seats'
-  ];
-  partiesColumns: string[] = [
-    'name', 'letters', 'percentage', 'votes',
-    'seats'
-  ];
-  extraPartiesColumns: string[] = [
-    'name', 'letters', 'percentage', 'votes',
-    'measure', 'votesSeats', 'connectionSeats', 'stubSeats',
-    'seats'
-  ];
+
+  partiesTable: Table<ICalculatedParty>;
+  extraPartiesTable: Table<ICalculatedParty>;
+  electionsInfoTable: Table<IElections>;
 
   chartSize: any[] = [200, 200];
   generalBlocksScheme = {
@@ -112,6 +104,10 @@ export class ResultsComponent implements OnInit, OnDestroy {
         .map(p => p.seats + p.stubSeats + p.stubConnectionSeats)
         .reduce((lhs, rhs) => lhs + rhs);
     }
+
+    this.partiesTable = new PartiesTable(this.elections);
+    this.extraPartiesTable = new ExtraPartiesTable(this.elections);
+    this.electionsInfoTable = new ElectionsInfoTable();
 
     this.generalBlocks = this.getChartsResults(info, (pInfo: IPartyBlockInfo) => pInfo.general);
     this.specificBlocks = this.getChartsResults(info, (pInfo: IPartyBlockInfo) => pInfo.specific);
