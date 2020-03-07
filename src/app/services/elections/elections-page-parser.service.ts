@@ -33,7 +33,8 @@ class PartiesParser {
         votePercentage,
         voteCount,
         seats,
-        stubSeats: 0} as IParty;
+        stubSeats: 0,
+        stubConnectionSeats: 0} as IParty;
     }
 
     return {

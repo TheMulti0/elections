@@ -11,16 +11,13 @@ import { Enumerable, IDictionary, IQueryable } from 'linq-typescript';
 import { IKeyValue } from 'linq-typescript/build/src/Enumerables';
 import { IPartyBlockInfo } from '../../models/iparty-block-info.model';
 import { IParty } from '../../models/iparty.model';
-import { PartiesTable } from "./parties-table";
-import { ITable } from "../table/itable";
-import { ExtraPartiesTable } from "./extra-parties-table";
-import { ElectionsInfoTable } from "./elections-info-table";
-
-class ChartItem {
-  constructor(
-    public name: string,
-    public value: number) {}
-}
+import { PartiesTable } from './parties-table';
+import { ITable } from '../table/itable';
+import { ExtraPartiesTable } from './extra-parties-table';
+import { ElectionsInfoTable } from './elections-info-table';
+import { Chart } from '../chart/chart';
+import { ChartItem } from '../chart/chart-item';
+import { Size } from '../chart/size';
 
 @Component({
   selector: 'app-results',
@@ -28,6 +25,12 @@ class ChartItem {
   styleUrls: ['./results.component.scss']
 })
 export class ResultsComponent implements OnInit, OnDestroy {
+
+  constructor(
+    private cdRef: ChangeDetectorRef,
+    private electionsService: ElectionsService
+  ) {
+  }
   @Input()
   public $electionsInfos: Observable<IElectionsInfo>;
 
@@ -37,30 +40,39 @@ export class ResultsComponent implements OnInit, OnDestroy {
   extraPartiesTable: ITable<ICalculatedParty>;
   electionsInfoTable: ITable<IElections>;
 
-  chartSize: any[] = [200, 200];
-  generalBlocksScheme = {
-    domain: ['#0575f5', '#f5052d', '#181b1c']
+  private chartSize: Size =
+  {
+    height: 200,
+    width: 200
   };
-  specificBlocksScheme = {
-    domain: ['#0575f5', '#f5052d', '#ca60f7', '#d6b01b', '#181b1c']
-  };
-  partiesScheme = {
-    domain: ['#3d8cf4', '#f5052d', '#ca60f7', '#d6b01b', '#244096', '#c9eefc', '#181b1c', '#60f786', '#0551f5', '#f50565', '#05f571']
-  };
+
+  charts: Chart[] = [];
 
   elections: CalculatedElections;
   overallSeats: number;
 
-  generalBlocks: ChartItem[];
-  specificBlocks: ChartItem[];
-  parties: ChartItem[];
-
   private infoSubscription: Subscription;
 
-  constructor(
-    private cdRef: ChangeDetectorRef,
-    private electionsService: ElectionsService
-  ) {
+  private static toBlockAndSeats(
+    partyInfo: IPartyBlockInfo,
+    blockSupplier: (IPartyBlockInfo) => Block,
+    lettersToParties: IDictionary<string, ICalculatedParty>
+  ): IKeyValue<Block, number> {
+    const party: ICalculatedParty = lettersToParties.get(partyInfo.letters);
+
+    return {
+      key: blockSupplier(partyInfo),
+      value: party.seats + party.stubSeats + party.stubConnectionSeats
+    };
+  }
+
+  private static sumBlocksSeats(
+    group: IKeyValue<Block, IQueryable<{ value: number; key: Block }>>
+  ): ChartItem {
+    return new ChartItem(
+      group.key,
+      group.value.sum(kv => kv.value)
+    );
   }
 
   public async ngOnInit(): Promise<void> {
@@ -72,11 +84,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   }
 
   private async onRefresh(info: IElectionsInfo): Promise<void> {
-
-    this.elections = null;
-    this.generalBlocks = null;
-    this.specificBlocks = null;
-    this.parties = null;
+    this.clearPreviousData();
 
     const elections: IElections = await this.electionsService.getElectionsResults(info.url);
 
@@ -105,21 +113,53 @@ export class ResultsComponent implements OnInit, OnDestroy {
         .reduce((lhs, rhs) => lhs + rhs);
     }
 
+    this.fillUiComponents(info);
+  }
+
+  private clearPreviousData() {
+    this.elections = null;
+    this.partiesTable = null;
+    this.extraPartiesTable = null;
+    this.electionsInfoTable = null;
+    this.charts = [];
+  }
+
+  private fillUiComponents(info: IElectionsInfo) {
     this.partiesTable = new PartiesTable(this.elections);
     this.extraPartiesTable = new ExtraPartiesTable(this.elections);
     this.electionsInfoTable = new ElectionsInfoTable();
 
-    this.generalBlocks = this.getChartsResults(info, (pInfo: IPartyBlockInfo) => pInfo.general);
-    this.specificBlocks = this.getChartsResults(info, (pInfo: IPartyBlockInfo) => pInfo.specific);
-    this.parties = this.elections.parties.map((party: ICalculatedParty) => {
-      return { name: party.name, value: party.seats + party.stubSeats + party.stubConnectionSeats };
-    });
+    if (info.partiesBlocks.length === 0) {
+      return;
+    }
+
+    this.charts.push(
+      new Chart(
+        this.chartSize,
+        ['#0575f5', '#f5052d', '#181b1c'],
+        this.getChartsResults(
+          info,
+          (pInfo: IPartyBlockInfo) => pInfo.general)),
+      new Chart(
+        this.chartSize,
+        ['#0575f5', '#f5052d', '#ca60f7', '#d6b01b', '#181b1c'],
+        this.getChartsResults(
+          info,
+          (pInfo: IPartyBlockInfo) => pInfo.specific)
+      ),
+      new Chart(
+        this.chartSize,
+        ['#3d8cf4', '#f5052d', '#ca60f7', '#d6b01b', '#244096', '#c9eefc', '#181b1c', '#60f786', '#0551f5', '#f50565', '#05f571'],
+        this.elections.parties.map((party: ICalculatedParty) => {
+          return { name: party.name, value: party.seats + party.stubSeats + party.stubConnectionSeats };
+        })
+    ));
   }
 
   private getChartsResults(
     info: IElectionsInfo,
     blockSupplier: (IPartyBlockInfo) => Block
-    ): { name: string, value: number }[] {
+  ): { name: string, value: number }[] {
 
     const lettersToParties: IDictionary<string, ICalculatedParty> = Enumerable
       .fromSource(this.elections.parties)
@@ -129,32 +169,8 @@ export class ResultsComponent implements OnInit, OnDestroy {
       .fromSource(info.partiesBlocks)
       .select(pi => ResultsComponent.toBlockAndSeats(pi, blockSupplier, lettersToParties))
       .groupBy(kv => kv.key)
-      .select(g => {
-        return ResultsComponent.sumBlocksSeats(g);
-      })
+      .select(ResultsComponent.sumBlocksSeats)
       .toArray();
-  }
-
-  private static toBlockAndSeats(
-    partyInfo: IPartyBlockInfo,
-    blockSupplier: (IPartyBlockInfo) => Block,
-    lettersToParties: IDictionary<string, ICalculatedParty>
-  ): IKeyValue<Block, number> {
-    const party: ICalculatedParty = lettersToParties.get(partyInfo.letters);
-
-    return {
-      key: blockSupplier(partyInfo),
-      value: party.seats + party.stubSeats + party.stubConnectionSeats
-    };
-  }
-
-  private static sumBlocksSeats(
-    group: IKeyValue<Block, IQueryable<{ value: number; key: Block }>>
-  ): ChartItem {
-    return new ChartItem(
-      group.key,
-      group.value.sum(kv => kv.value)
-    );
   }
 
   private getPartyColor(party: IParty): string {

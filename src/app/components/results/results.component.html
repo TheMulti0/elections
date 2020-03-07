@@ -25,50 +25,43 @@
       </mat-checkbox>
     </div>
 
-    <div class="row">
-      <h4>מידע על מערכת הבחירות</h4>
-    </div>
-    <div class="row flex" *ngIf="showAdvanced">
+    <div *ngIf="showAdvanced">
 
-      <app-table class="flex-fill"
-                 [table]="electionsInfoTable"
-                 [data]="[ elections ]"
-                 [backgroundSupplier]="this.getElectionsInfoColor.bind(this)">
-      </app-table>
-
-      <br />
-    </div>
-
-    <div class="row">
-      <h4>חלוקה למנדטים</h4>
-    </div>
-    <div class="row" *ngIf="specificBlocks">
-      <div class="col">
-        <ngx-charts-pie-chart
-          [view]="chartSize"
-          [scheme]="generalBlocksScheme"
-          [results]="generalBlocks"
-          [gradient]="true">
-        </ngx-charts-pie-chart>
+      <div class="row">
+        <h4>מידע על מערכת הבחירות</h4>
       </div>
-      <div class="col">
-        <ngx-charts-pie-chart
-          [view]="chartSize"
-          [scheme]="specificBlocksScheme"
-          [results]="specificBlocks"
-          [gradient]="true">
-        </ngx-charts-pie-chart>
+
+      <div class="row flex">
+
+        <app-table class="flex-fill"
+                   [table]="electionsInfoTable"
+                   [data]="[ elections ]"
+                   [backgroundSupplier]="this.getElectionsInfoColor.bind(this)">
+        </app-table>
+
+        <br />
       </div>
-      <div class="col">
-        <ngx-charts-pie-chart
-          [view]="chartSize"
-          [scheme]="partiesScheme"
-          [results]="parties"
-          [gradient]="true">
-        </ngx-charts-pie-chart>
-      </div>
+
     </div>
 
+    <div *ngIf="charts.length > 0">
+
+      <div class="row">
+        <h4>חלוקה למנדטים</h4>
+      </div>
+
+      <div class="row">
+        <div class="col" *ngFor="let chart of charts">
+          <ngx-charts-pie-chart
+            [view]="chart.size"
+            [scheme]="chart.scheme"
+            [results]="chart.data"
+            [gradient]="true">
+          </ngx-charts-pie-chart>
+        </div>
+      </div>
+
+    </div>
 
     <div class="row">
       <h4>תוצאות הבחירות</h4>
