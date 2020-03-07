@@ -7,8 +7,13 @@ import { IElections } from '../../models/ielections.model';
 class PartiesParser {
 
   public static parseParties(parser: BeautifulDom): IParty[] {
-    return parser
-      .getElementsByClassName('TableData')[0]
+    let myTable = parser
+      .getElementsByClassName('TableData')[0];
+    if (myTable === undefined) {
+      myTable = parser
+        .getElementsByClassName('TableDataBox')[0];
+    }
+    return myTable
       .getElementsByTagName('tr')
       .map(PartiesParser.itemToParty);
   }

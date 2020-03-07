@@ -78,6 +78,20 @@ export class AppComponent implements OnInit {
         ['פה', 'ל']
       ],
       partiesBlocks: null
+    },
+    {
+      name: 'הבחירות לכנסת ה - 21 (2019 אפריל)',
+      url: 'https://votes21.bechirot.gov.il/nationalresults',
+      blockPercentage: 3.25,
+      spareAgreements: [
+        ['מחל', 'טב'],
+        ['מרצ', 'אמת'],
+        ['שס', 'ג'],
+        ['נ', 'ל'],
+        ['ום', 'דעם'],
+        ['ףץ', 'ףז']
+      ],
+      partiesBlocks: null
     }
   ];
 

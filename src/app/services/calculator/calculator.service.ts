@@ -6,6 +6,7 @@ import { ICalculatedParty } from '../../models/icalculated-party.model';
 import { CalculatedParty } from '../../models/calculated-party.model';
 import { ConnectedParty } from '../../models/connected-party.model';
 import { IElectionsInfo } from '../../models/ielections-info.model';
+import { min } from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,8 @@ export class Calculator {
     const calculatedParties = this.calculateAllParties(
       initialCalculatedParties,
       stubSeats,
-      info.spareAgreements);
+      info.spareAgreements,
+      minVotes);
 
     const partiesUnderMin: ICalculatedParty[] = this.getPartiesUnderMin(elections, minVotes)
       .map(party => new CalculatedParty(party, 0, 0, 0));
@@ -56,7 +58,8 @@ export class Calculator {
   private static calculateAllParties(
     calculatedParties: ICalculatedParty[],
     stubSeats: number,
-    spareAgreements: [string, string][]
+    spareAgreements: [string, string][],
+    minVotes: number
   ) {
 
     this.spreadStubSeats(
@@ -76,7 +79,7 @@ export class Calculator {
       calculatedParties.concat(party);
     }
 
-    return calculatedParties;
+    return calculatedParties.filter(p => p.voteCount >= minVotes);
   }
 
   private static calculateParties(
@@ -94,7 +97,7 @@ export class Calculator {
   }
 
   private static getInitialPartySeats(party: IParty, generalMeasure: number) {
-    return Math.round(party.voteCount / generalMeasure);
+    return Math.floor(party.voteCount / generalMeasure);
   }
 
   private static flattenVotes(partiesAboveMin: IParty[]) {
@@ -125,7 +128,19 @@ export class Calculator {
     letter: string,
     parties: [string, ICalculatedParty][]
   ): ICalculatedParty {
-    return parties.find(kv => kv[0] === letter)[1];
+    try {
+      return parties.find(kv => kv[0] === letter)[1];
+    } catch {
+      return {
+        name: 'party ' + letter,
+        letters: letter,
+        votePercentage: 0,
+        voteCount: 0,
+        measure: 0,
+        seats: 0,
+        stubSeats: 0,
+        stubConnectionSeats: 0};
+    }
   }
 
   private static spreadStubSeats(

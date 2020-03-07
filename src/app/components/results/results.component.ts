@@ -97,7 +97,10 @@ export class ResultsComponent implements OnInit, OnDestroy {
     if (calculatedParties.length > 0) {
       this.elections = new CalculatedElections(
         elections,
-        calculatedParties,
+        calculatedParties.map(p => {
+          p.measure = calculated.parties.find(c => c.letters === p.letters).measure;
+          return p;
+        }),
         calculated.minimumVoteCount,
         calculated.generalMeasure,
         calculated.overallVotesAboveMin,
