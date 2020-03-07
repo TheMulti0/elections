@@ -12,6 +12,12 @@ import { IKeyValue } from 'linq-typescript/build/src/Enumerables';
 import { IPartyBlockInfo } from '../../models/iparty-block-info.model';
 import { IParty } from '../../models/iparty.model';
 
+class ChartItem {
+  constructor(
+    public name: string,
+    public value: number) {}
+}
+
 @Component({
   selector: 'app-results',
   templateUrl: './results.component.html',
@@ -53,9 +59,9 @@ export class ResultsComponent implements OnInit, OnDestroy {
   elections: CalculatedElections;
   overallSeats: number;
 
-  generalBlocks: { name: string, value: number }[];
-  specificBlocks: { name: string, value: number }[];
-  parties: { name: string, value: number }[];
+  generalBlocks: ChartItem[];
+  specificBlocks: ChartItem[];
+  parties: ChartItem[];
 
   private infoSubscription: Subscription;
 
@@ -148,12 +154,11 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   private static sumBlocksSeats(
     group: IKeyValue<Block, IQueryable<{ value: number; key: Block }>>
-  ): { name: string, value: number } {
-    return {
-      name: group.key,
-      value: group.value
-        .sum(kv => kv.value)
-    };
+  ): ChartItem {
+    return new ChartItem(
+      group.key,
+      group.value.sum(kv => kv.value)
+    );
   }
 
   private getPartyColor(party: IParty): string {
