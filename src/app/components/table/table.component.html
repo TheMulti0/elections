@@ -1,0 +1,27 @@
+<mat-table [dataSource]="data">
+
+  <ng-container *ngFor='let column of table.columns'
+                [matColumnDef]="column.name">
+
+    <mat-header-cell *matHeaderCellDef>
+      {{ column.headerText }}
+    </mat-header-cell>
+
+    <mat-cell *matCellDef="let item"
+              [style.background-color]="backgroundSupplier(item)">
+
+      {{ column.getContent(item) }}
+
+    </mat-cell>
+
+    <mat-footer-cell *matFooterCellDef>
+      {{ column.footerText }}
+    </mat-footer-cell>
+
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="getColumnNames(); sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: getColumnNames();"></mat-row>
+  <mat-footer-row *matFooterRowDef="getColumnNames(); sticky: true"></mat-footer-row>
+
+</mat-table>

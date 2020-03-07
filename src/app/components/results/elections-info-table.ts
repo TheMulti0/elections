@@ -1,13 +1,11 @@
-import { Table } from '../table/table';
+import { ITable } from '../table/itable';
 import { Column } from '../table/column';
 import { IElections } from '../../models/ielections.model';
 
-export class ElectionsInfoTable extends Table<IElections> {
+export class ElectionsInfoTable implements ITable<IElections> {
   public columns: Column<IElections>[];
 
   constructor() {
-    super();
-
     this.columns = [
       new Column<IElections>(
         'privileged',

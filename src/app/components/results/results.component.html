@@ -10,7 +10,8 @@
 
   </div>
 
-  <div *ngIf="elections">
+  <div class="mx-5"
+       *ngIf="elections">
 
     <div class="row">
       <h1> הבחירות לכנסת ה - {{ elections.knesset }} </h1>
@@ -24,42 +25,24 @@
       </mat-checkbox>
     </div>
 
-    <hr>
-
-    <div class="row" *ngIf="showAdvanced">
+    <div class="row">
       <h4>מידע על מערכת הבחירות</h4>
+    </div>
+    <div class="row flex" *ngIf="showAdvanced">
 
-      <mat-table *ngIf="showAdvanced" [dataSource]="[ elections ]">
-
-        <ng-container *ngFor='let column of electionsInfoTable.columns'
-                      [matColumnDef]="column.name">
-
-          <mat-header-cell *matHeaderCellDef>
-            {{ column.headerText }}
-          </mat-header-cell>
-
-          <mat-cell *matCellDef="let elections">
-            {{ column.getContent(elections) }}
-          </mat-cell>
-
-          <mat-footer-cell *matFooterCellDef>
-            {{ column.footerText }}
-          </mat-footer-cell>
-
-        </ng-container>
-
-        <mat-header-row *matHeaderRowDef="electionsInfoTable.getColumnNames(); sticky: true"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: electionsInfoTable.getColumnNames();"></mat-row>
-        <mat-footer-row *matFooterRowDef="electionsInfoTable.getColumnNames(); sticky: true"></mat-footer-row>
-
-      </mat-table>
+      <app-table class="flex-fill"
+                 [table]="electionsInfoTable"
+                 [data]="[ elections ]"
+                 [backgroundSupplier]="this.getElectionsInfoColor.bind(this)">
+      </app-table>
 
       <br />
     </div>
 
-    <div class="row" *ngIf="specificBlocks">
+    <div class="row">
       <h4>חלוקה למנדטים</h4>
-
+    </div>
+    <div class="row" *ngIf="specificBlocks">
       <div class="col">
         <ngx-charts-pie-chart
           [view]="chartSize"
@@ -86,62 +69,24 @@
       </div>
     </div>
 
-    <hr>
 
     <div class="row">
       <h4>תוצאות הבחירות</h4>
+    </div>
+    <div class="row flex">
+      <app-table class="flex-fill"
+                 *ngIf="!showAdvanced"
+                 [table]="partiesTable"
+                 [data]="elections.parties"
+                 [backgroundSupplier]="this.getPartyColor.bind(this)">
+      </app-table>
 
-      <mat-table *ngIf="showAdvanced" [dataSource]="elections.parties">
-
-        <ng-container *ngFor='let column of extraPartiesTable.columns'
-                      [matColumnDef]="column.name">
-
-          <mat-header-cell *matHeaderCellDef>
-            {{ column.headerText }}
-          </mat-header-cell>
-
-          <mat-cell *matCellDef="let party"
-                    [style.background-color]="getPartyColor(party)">
-            {{ column.getContent(party) }}
-          </mat-cell>
-
-          <mat-footer-cell *matFooterCellDef>
-            {{ column.footerText }}
-          </mat-footer-cell>
-
-        </ng-container>
-
-        <mat-header-row *matHeaderRowDef="extraPartiesTable.getColumnNames(); sticky: true"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: extraPartiesTable.getColumnNames();"></mat-row>
-        <mat-footer-row *matFooterRowDef="extraPartiesTable.getColumnNames(); sticky: true"></mat-footer-row>
-
-      </mat-table>
-
-      <mat-table *ngIf="!showAdvanced" [dataSource]="elections.parties">
-
-        <ng-container *ngFor='let column of partiesTable.columns'
-                      [matColumnDef]="column.name">
-
-          <mat-header-cell *matHeaderCellDef>
-            {{ column.headerText }}
-          </mat-header-cell>
-
-          <mat-cell *matCellDef="let party"
-                    [style.background-color]="getPartyColor(party)">
-            {{ column.getContent(party) }}
-          </mat-cell>
-
-          <mat-footer-cell *matFooterCellDef>
-            {{ column.footerText }}
-          </mat-footer-cell>
-
-        </ng-container>
-
-        <mat-header-row *matHeaderRowDef="partiesTable.getColumnNames(); sticky: true"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: partiesTable.getColumnNames();"></mat-row>
-        <mat-footer-row *matFooterRowDef="partiesTable.getColumnNames(); sticky: true"></mat-footer-row>
-
-      </mat-table>
+      <app-table class="flex-fill"
+                 *ngIf="showAdvanced"
+                 [table]="extraPartiesTable"
+                 [data]="elections.parties"
+                 [backgroundSupplier]="this.getPartyColor.bind(this)">
+      </app-table>
     </div>
 
   </div>

@@ -1,14 +1,12 @@
-import { Table } from '../table/table';
+import { ITable } from '../table/itable';
 import { ICalculatedParty } from '../../models/icalculated-party.model';
 import { Column } from '../table/column';
 import { IElections } from '../../models/ielections.model';
 
-export class PartiesTable extends Table<ICalculatedParty> {
+export class PartiesTable implements ITable<ICalculatedParty> {
     public columns: Column<ICalculatedParty>[];
 
     constructor(elections: IElections) {
-        super();
-
         this.columns = [
             new Column<ICalculatedParty>(
                 'name',

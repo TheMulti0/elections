@@ -8,13 +8,13 @@ import { MaterialModule } from './app.material.module.exports';
 import { ResultsComponent } from './components/results/results.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { FormsModule } from '@angular/forms';
-import { RoundPipe } from './components/results/round.pipe';
+import { TableComponent } from './components/table/table.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ResultsComponent,
-    RoundPipe
+    TableComponent
   ],
   imports: [
     BrowserModule,

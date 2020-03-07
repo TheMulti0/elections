@@ -12,7 +12,7 @@ import { IKeyValue } from 'linq-typescript/build/src/Enumerables';
 import { IPartyBlockInfo } from '../../models/iparty-block-info.model';
 import { IParty } from '../../models/iparty.model';
 import { PartiesTable } from "./parties-table";
-import { Table } from "../table/table";
+import { ITable } from "../table/itable";
 import { ExtraPartiesTable } from "./extra-parties-table";
 import { ElectionsInfoTable } from "./elections-info-table";
 
@@ -33,9 +33,9 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   showAdvanced: boolean;
 
-  partiesTable: Table<ICalculatedParty>;
-  extraPartiesTable: Table<ICalculatedParty>;
-  electionsInfoTable: Table<IElections>;
+  partiesTable: ITable<ICalculatedParty>;
+  extraPartiesTable: ITable<ICalculatedParty>;
+  electionsInfoTable: ITable<IElections>;
 
   chartSize: any[] = [200, 200];
   generalBlocksScheme = {
@@ -167,5 +167,9 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   private isPartyOverBlock(party: IParty) {
     return party.voteCount > this.elections.minimumVoteCount;
+  }
+
+  private getElectionsInfoColor(elections: IElections): string {
+    return '';
   }
 }

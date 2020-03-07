@@ -12,7 +12,7 @@ export class CalculatedParty implements ICalculatedParty {
     party: IParty,
     public measure: number,
     public seats: number,
-    public stubConnectionSeats: number
+    public stubConnectionSeats: number = 0
   ) {
       this.name = party.name;
       this.letters = party.letters;

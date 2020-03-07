@@ -1,16 +1,14 @@
-import { Table } from '../table/table';
+import { ITable } from '../table/itable';
 import { ICalculatedParty } from '../../models/icalculated-party.model';
 import { Column } from '../table/column';
 import { IElections } from '../../models/ielections.model';
 import { PartiesTable } from './parties-table';
 
-export class ExtraPartiesTable extends Table<ICalculatedParty> {
+export class ExtraPartiesTable implements ITable<ICalculatedParty> {
   public columns: Column<ICalculatedParty>[];
 
   constructor(elections: IElections) {
-    super();
-
-    const partiesTable: Table<ICalculatedParty> = new PartiesTable(elections);
+    const partiesTable: ITable<ICalculatedParty> = new PartiesTable(elections);
 
     this.columns = partiesTable.columns;
     const seatsColumn = this.columns.pop(); // Remove seats - it will be added at the end
