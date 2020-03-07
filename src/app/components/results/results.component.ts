@@ -40,8 +40,14 @@ export class ResultsComponent implements OnInit, OnDestroy {
   ];
 
   chartSize: any[] = [200, 200];
-  chartScheme = {
-    domain: ['#3d8cf4', '#c9eefc', '#181b1c', '#d6b01b', '#244096', '#f4503a', '#ca60f7', '#60f786']
+  generalBlocksScheme = {
+    domain: ['#0575f5', '#f5052d', '#181b1c']
+  };
+  specificBlocksScheme = {
+    domain: ['#0575f5', '#f5052d', '#ca60f7', '#d6b01b', '#181b1c']
+  };
+  partiesScheme = {
+    domain: ['#3d8cf4', '#f5052d', '#ca60f7', '#d6b01b', '#244096', '#c9eefc', '#181b1c', '#60f786', '#0551f5', '#f50565', '#05f571']
   };
 
   elections: CalculatedElections;
@@ -101,14 +107,14 @@ export class ResultsComponent implements OnInit, OnDestroy {
         .reduce((lhs, rhs) => lhs + rhs);
     }
 
-    this.generalBlocks = this.extracted(info, (pInfo: IPartyBlockInfo) => pInfo.general);
-    this.specificBlocks = this.extracted(info, (pInfo: IPartyBlockInfo) => pInfo.specific);
+    this.generalBlocks = this.getChartsResults(info, (pInfo: IPartyBlockInfo) => pInfo.general);
+    this.specificBlocks = this.getChartsResults(info, (pInfo: IPartyBlockInfo) => pInfo.specific);
     this.parties = this.elections.parties.map((party: ICalculatedParty) => {
       return { name: party.name, value: party.seats + party.stubSeats + party.stubConnectionSeats };
     });
   }
 
-  private extracted(
+  private getChartsResults(
     info: IElectionsInfo,
     blockSupplier: (IPartyBlockInfo) => Block
     ): { name: string, value: number }[] {
@@ -148,5 +154,17 @@ export class ResultsComponent implements OnInit, OnDestroy {
       value: group.value
         .sum(kv => kv.value)
     };
+  }
+
+  private getPartyColor(party: IParty): string {
+    if (this.isPartyOverBlock(party)) {
+      return 'rgba(75,244,129,.10)';
+    } else {
+      return 'rgba(234,58,58,.10)';
+    }
+  }
+
+  private isPartyOverBlock(party: IParty) {
+    return party.voteCount > this.elections.minimumVoteCount;
   }
 }

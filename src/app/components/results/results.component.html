@@ -88,7 +88,7 @@
       <div class="col">
         <ngx-charts-pie-chart
           [view]="chartSize"
-          [scheme]="chartScheme"
+          [scheme]="generalBlocksScheme"
           [results]="generalBlocks"
           [gradient]="true">
         </ngx-charts-pie-chart>
@@ -96,7 +96,7 @@
       <div class="col">
         <ngx-charts-pie-chart
           [view]="chartSize"
-          [scheme]="chartScheme"
+          [scheme]="specificBlocksScheme"
           [results]="specificBlocks"
           [gradient]="true">
         </ngx-charts-pie-chart>
@@ -104,7 +104,7 @@
       <div class="col">
         <ngx-charts-pie-chart
           [view]="chartSize"
-          [scheme]="chartScheme"
+          [scheme]="partiesScheme"
           [results]="parties"
           [gradient]="true">
         </ngx-charts-pie-chart>
@@ -120,31 +120,31 @@
 
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef> שם </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ element.name }} </mat-cell>
+          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.name }} </mat-cell>
           <mat-footer-cell *matFooterCellDef> סיכום </mat-footer-cell>
         </ng-container>
 
         <ng-container matColumnDef="letters">
           <mat-header-cell *matHeaderCellDef> אותיות </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ element.letters }} </mat-cell>
+          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.letters }} </mat-cell>
           <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
         </ng-container>
 
         <ng-container matColumnDef="percentage">
           <mat-header-cell *matHeaderCellDef> אחוז מבין כל הקולות </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ element.votePercentage }}% </mat-cell>
+          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.votePercentage }}% </mat-cell>
           <mat-footer-cell *matFooterCellDef> {{ elections.votersPercentage }}% </mat-footer-cell>
         </ng-container>
 
         <ng-container matColumnDef="votes">
           <mat-header-cell *matHeaderCellDef> קולות </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ element.voteCount | number }} </mat-cell>
+          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.voteCount | number }} </mat-cell>
           <mat-footer-cell *matFooterCellDef> {{ elections.legalVotes | number }} </mat-footer-cell>
         </ng-container>
 
         <ng-container matColumnDef="seats">
           <mat-header-cell *matHeaderCellDef> סה"כ מנדטים </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ element.seats + element.stubSeats + element.stubConnectionSeats| number }} </mat-cell>
+          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.seats + element.stubSeats + element.stubConnectionSeats| number }} </mat-cell>
           <mat-footer-cell *matFooterCellDef> {{ overallSeats }} </mat-footer-cell>
         </ng-container>
 
@@ -158,55 +158,55 @@
 
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef> שם </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ element.name }} </mat-cell>
+          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.name }} </mat-cell>
           <mat-footer-cell *matFooterCellDef> סיכום </mat-footer-cell>
         </ng-container>
 
         <ng-container matColumnDef="letters">
           <mat-header-cell *matHeaderCellDef> אותיות </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ element.letters }} </mat-cell>
+          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.letters }} </mat-cell>
           <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
         </ng-container>
 
         <ng-container matColumnDef="percentage">
           <mat-header-cell *matHeaderCellDef> אחוז מבין כל הקולות </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ element.votePercentage }}% </mat-cell>
+          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.votePercentage }}% </mat-cell>
           <mat-footer-cell *matFooterCellDef> {{ elections.votersPercentage }}% </mat-footer-cell>
         </ng-container>
 
         <ng-container matColumnDef="votes">
           <mat-header-cell *matHeaderCellDef> קולות </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ element.voteCount | number }} </mat-cell>
+          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.voteCount | number }} </mat-cell>
           <mat-footer-cell *matFooterCellDef> {{ elections.legalVotes | number }} </mat-footer-cell>
         </ng-container>
 
         <ng-container matColumnDef="measure">
           <mat-header-cell *matHeaderCellDef> עלות מנדט </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ element.measure | round | number }} </mat-cell>
+          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.measure | round | number }} </mat-cell>
           <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
         </ng-container>
 
         <ng-container matColumnDef="votesSeats">
           <mat-header-cell *matHeaderCellDef> מנדטים מקולות </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ element.seats + element.stubSeats | number }} </mat-cell>
+          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.seats + element.stubSeats | number }} </mat-cell>
           <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
         </ng-container>
 
         <ng-container matColumnDef="connectionSeats">
           <mat-header-cell *matHeaderCellDef> מנדטים מהסכמי עודפים </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ element.stubConnectionSeats | number }} </mat-cell>
+          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.stubConnectionSeats | number }} </mat-cell>
           <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
         </ng-container>
 
         <ng-container matColumnDef="stubSeats">
           <mat-header-cell *matHeaderCellDef> מנדטים מעודפים </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ element.stubSeats | number }} </mat-cell>
+          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.stubSeats | number }} </mat-cell>
           <mat-footer-cell *matFooterCellDef> </mat-footer-cell>
         </ng-container>
 
         <ng-container matColumnDef="seats">
           <mat-header-cell *matHeaderCellDef> סה"כ מנדטים </mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{ element.seats + element.stubSeats + element.stubConnectionSeats| number }} </mat-cell>
+          <mat-cell *matCellDef="let element" [style.background-color]="getPartyColor(element)"> {{ element.seats + element.stubSeats + element.stubConnectionSeats| number }} </mat-cell>
           <mat-footer-cell *matFooterCellDef> {{ overallSeats }} </mat-footer-cell>
         </ng-container>
 
