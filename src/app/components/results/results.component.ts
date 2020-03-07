@@ -176,7 +176,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
       .toArray();
   }
 
-  private getPartyColor(party: IParty): string {
+  getPartyColor(party: IParty): string {
     if (this.isPartyOverBlock(party)) {
       return 'rgba(75,244,129,.10)';
     } else {
@@ -188,7 +188,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
     return party.voteCount > this.elections.minimumVoteCount;
   }
 
-  private getElectionsInfoColor(elections: IElections): string {
+  getElectionsInfoColor(elections: IElections): string {
     return '';
   }
 }
