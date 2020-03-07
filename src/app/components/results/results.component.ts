@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { CalculatedElections } from '../../models/calculated-elections.model';
 import { ElectionsService } from '../../services/elections/elections.service';
 import { IElections } from '../../models/ielections.model';
@@ -28,10 +28,17 @@ export class ResultsComponent implements OnInit, OnDestroy {
     'block',
     'votes', 'thrownVotes',
     'measure', 'seats'
-  ]
-  partiesColumns: string[] = [
-    'name', 'letters', 'percentage', 'votes', 'seats'
   ];
+  partiesColumns: string[] = [
+    'name', 'letters', 'percentage', 'votes',
+    'seats'
+  ];
+  extraPartiesColumns: string[] = [
+    'name', 'letters', 'percentage', 'votes',
+    'measure', 'votesSeats', 'connectionSeats', 'stubSeats',
+    'seats'
+  ];
+
   chartSize: any[] = [200, 200];
   chartScheme = {
     domain: ['#3d8cf4', '#c9eefc', '#181b1c', '#d6b01b', '#244096', '#f4503a', '#ca60f7', '#60f786']
@@ -47,6 +54,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   private infoSubscription: Subscription;
 
   constructor(
+    private cdRef: ChangeDetectorRef,
     private electionsService: ElectionsService
   ) {
   }
@@ -87,16 +95,16 @@ export class ResultsComponent implements OnInit, OnDestroy {
       this.overallSeats = 120;
     } else {
 
-      this.elections = calculated
+      this.elections = calculated;
       this.overallSeats = this.elections.parties
-        .map(p => p.seats + p.stubSeats)
+        .map(p => p.seats + p.stubSeats + p.stubConnectionSeats)
         .reduce((lhs, rhs) => lhs + rhs);
     }
 
     this.generalBlocks = this.extracted(info, (pInfo: IPartyBlockInfo) => pInfo.general);
     this.specificBlocks = this.extracted(info, (pInfo: IPartyBlockInfo) => pInfo.specific);
     this.parties = this.elections.parties.map((party: ICalculatedParty) => {
-      return { name: party.name, value: party.seats + party.stubSeats };
+      return { name: party.name, value: party.seats + party.stubSeats + party.stubConnectionSeats };
     });
   }
 
@@ -111,15 +119,15 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
     return Enumerable
       .fromSource(info.partiesBlocks)
-      .select(pi => this.toBlockAndSeats(pi, blockSupplier, lettersToParties))
+      .select(pi => ResultsComponent.toBlockAndSeats(pi, blockSupplier, lettersToParties))
       .groupBy(kv => kv.key)
       .select(g => {
-        return this.sumBlocksSeats(g);
+        return ResultsComponent.sumBlocksSeats(g);
       })
       .toArray();
   }
 
-  private toBlockAndSeats(
+  private static toBlockAndSeats(
     partyInfo: IPartyBlockInfo,
     blockSupplier: (IPartyBlockInfo) => Block,
     lettersToParties: IDictionary<string, ICalculatedParty>
@@ -128,11 +136,11 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
     return {
       key: blockSupplier(partyInfo),
-      value: party.seats + party.stubSeats
+      value: party.seats + party.stubSeats + party.stubConnectionSeats
     };
   }
 
-  private sumBlocksSeats(
+  private static sumBlocksSeats(
     group: IKeyValue<Block, IQueryable<{ value: number; key: Block }>>
   ): { name: string, value: number } {
     return {

@@ -7,6 +7,8 @@ export class ConnectedParty implements ICalculatedParty {
   public voteCount: number;
   public seats: number;
   public stubSeats = 0;
+  public stubConnectionSeats = 0;
+  public measure: number;
 
   constructor(
     public lhs: ICalculatedParty,
@@ -18,5 +20,6 @@ export class ConnectedParty implements ICalculatedParty {
     this.voteCount = lhs.voteCount + rhs.voteCount;
     this.seats = lhs.seats + rhs.seats;
   }
+
 
 }

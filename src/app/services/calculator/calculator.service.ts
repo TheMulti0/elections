@@ -28,7 +28,7 @@ export class Calculator {
       info.spareAgreements);
 
     const partiesUnderMin: ICalculatedParty[] = this.getPartiesUnderMin(elections, minVotes)
-      .map(party => new CalculatedParty(party, 0));
+      .map(party => new CalculatedParty(party, 0, 0, 0));
 
     const allParties = calculatedParties.concat(partiesUnderMin);
 
@@ -87,7 +87,9 @@ export class Calculator {
     return partiesAboveMin
       .map(party => new CalculatedParty(
         party,
-        this.getInitialPartySeats(party, generalMeasure))
+        party.voteCount / (this.getInitialPartySeats(party, generalMeasure) + 1),
+        this.getInitialPartySeats(party, generalMeasure),
+        0)
       );
   }
 
@@ -135,7 +137,7 @@ export class Calculator {
       let partyWithMaxMeasure: ICalculatedParty;
 
       for (const calculatedParty of calculatedParties) {
-        const measure = calculatedParty.voteCount / (calculatedParty.seats + 1);
+        const measure = calculatedParty.measure;
 
         if (measure > maxPartyMeasure) {
           maxPartyMeasure = measure;
@@ -172,9 +174,9 @@ export class Calculator {
         const rhsMeasure = rhsVotes / (rhs.seats + 1);
 
         if (lhsMeasure > rhsMeasure) {
-          lhs.stubSeats = 1;
+          lhs.stubConnectionSeats = 1;
         } else {
-          rhs.stubSeats = 1;
+          lhs.stubConnectionSeats = 1;
         }
       }
     }
