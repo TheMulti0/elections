@@ -1,12 +1,15 @@
-<div *ngFor="let pollResult of pollsResults">
-    
-    Publisher: {{ pollResult.publisher }}
+<div *ngFor="let vm of pollsViewModels">
 
-    Examiner: {{ pollResult.examiner }}
+    Publisher: {{ vm.publisher }}
 
-    <div *ngFor="let electionResult of pollResult.electionsResults">
-        Name: {{ electionResult.name }}
-        Seats: {{ electionResult.seats }}
-    </div>
+    Examiner: {{ vm.examiner }}
+
+    <ngx-charts-bar-vertical 
+        [view]="view"
+        [scheme]="colorScheme" 
+        [results]="vm.chartValues"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true">
+    </ngx-charts-bar-vertical>
 
 </div>
