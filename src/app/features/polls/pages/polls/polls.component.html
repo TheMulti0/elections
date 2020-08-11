@@ -1,1 +1,12 @@
-<p>polls works!</p>
+<div *ngFor="let pollResult of pollsResults">
+    
+    Publisher: {{ pollResult.publisher }}
+
+    Examiner: {{ pollResult.examiner }}
+
+    <div *ngFor="let electionResult of pollResult.electionsResults">
+        Name: {{ electionResult.name }}
+        Seats: {{ electionResult.seats }}
+    </div>
+
+</div>

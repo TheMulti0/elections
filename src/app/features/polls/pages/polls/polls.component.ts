@@ -1,3 +1,5 @@
+import { PollResultModel } from './../../../../models/poll-result.model';
+import { PollsService } from './../../services/polls.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -7,9 +9,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PollsComponent implements OnInit {
 
-  constructor() { }
+  pollsResults: PollResultModel[];
+
+  constructor(
+    private service: PollsService
+  ) { }
 
   ngOnInit(): void {
+    this.pollsResults = this.service.getPollsResults();
   }
 
 }
