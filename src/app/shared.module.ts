@@ -1,7 +1,6 @@
-import { LayoutComponent } from './components/layout/layout.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MaterialModule } from './material.module';
+import { MaterialModule } from './shared/material.module';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -21,7 +20,6 @@ const modules = [
 
 @NgModule({
   declarations: [
-    LayoutComponent
   ],
   imports: modules,
   exports: modules

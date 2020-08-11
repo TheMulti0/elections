@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { map, shareReplay } from 'rxjs/operators';
 
 @Component({
@@ -19,7 +19,7 @@ export class LayoutComponent {
   pages: { path: string, name: string }[] = [
     {
       path: '/',
-      name: 'בית'
+      name: 'סקרים'
     }
   ];
 
