@@ -3,8 +3,7 @@ import { PollsService } from './../../services/polls.service';
 import { Component, OnInit } from '@angular/core';
 
 interface PollViewModel {
-  publisher: string;
-  examiner: string;
+  displayName: string;
   chartValues: any[];
 }
 
@@ -14,8 +13,8 @@ interface PollViewModel {
   styleUrls: ['./polls.component.scss']
 })
 export class PollsComponent implements OnInit {
-
-  pollsViewModels: PollViewModel[];
+  pollViewModels: PollViewModel[];
+  selectedPollViewModel: PollViewModel;
 
   view: any[] = [200, 200];
 
@@ -28,8 +27,10 @@ export class PollsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.pollsViewModels = this.service.getPollsResults()
+    this.pollViewModels = this.service.getPollResultModels()
       .map(poll => this.toViewModel(poll));
+
+    this.selectedPollViewModel = this.pollViewModels[0];
   }
 
   toViewModel(model: PollResultModel): PollViewModel {
@@ -39,8 +40,7 @@ export class PollsComponent implements OnInit {
     }));
 
     return {
-      publisher: model.publisher,
-      examiner: model.examiner,
+      displayName: `${model.publisher} (${model.examiner})`,
       chartValues: chartValues
     }
   }

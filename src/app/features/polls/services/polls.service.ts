@@ -8,7 +8,7 @@ export class PollsService {
 
   constructor() { }
 
-  getPollsResults(): PollResultModel[] {
+  getPollResultModels(): PollResultModel[] {
     return [
       {
         publisher: 'Test publisher',

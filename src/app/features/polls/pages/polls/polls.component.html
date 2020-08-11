@@ -1,15 +1,16 @@
-<div *ngFor="let vm of pollsViewModels">
+<div class="text-right">
 
-    Publisher: {{ vm.publisher }}
+    <mat-form-field>
+        <mat-select placeholder="Poll" [(value)]="selectedPollViewModel">
+            <mat-option *ngFor="let model of pollViewModels" [value]="model">
+                {{ model.displayName }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
 
-    Examiner: {{ vm.examiner }}
 
-    <ngx-charts-bar-vertical 
-        [view]="view"
-        [scheme]="colorScheme" 
-        [results]="vm.chartValues"
-        [showXAxisLabel]="true"
-        [showYAxisLabel]="true">
+    <ngx-charts-bar-vertical *ngIf="selectedPollViewModel" [view]="view" [scheme]="colorScheme" [results]="selectedPollViewModel.chartValues"
+        [showXAxisLabel]="true" [showYAxisLabel]="true">
     </ngx-charts-bar-vertical>
 
 </div>
